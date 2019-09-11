@@ -1,5 +1,6 @@
-SERVER:=localhost
-PORT:=8000
+# SERVER:=localhost
+SERVER:=0.0.0.0
+PORT:=8081
 NODE_BIN:=$(shell npm bin)
 ERR_MSG:="\n`tput bold`The server appears to already be running at: http://$(SERVER):$(PORT)\nTake a look at your other terminal windows?"
 

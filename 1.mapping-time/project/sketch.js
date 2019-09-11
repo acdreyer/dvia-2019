@@ -1,7 +1,9 @@
 
+
+
 function setup() {
   // set the width & height of the sketch
-  createCanvas(400, 130)
+  createCanvas(300, 300)
 
   // print the time to the console once at the beginning of the run. try opening up the
   // web inspector and poking around to see the various values the clock function gives you
@@ -23,7 +25,11 @@ function draw() {
   fill(100, 50, 50)
 
   // draw the time string to the canvas
-  text(now.text.date, 30, 50)
-  text(now.text.time, 30, 100)
+  // text(now.text.date, 30, 50)
+  // text(now.text.time, 30, 100)
+  var x = now.sec*width/60;
+  var y = (height - now.min*height/60);
+  line(x, 0, x, height);
+  line(0, y, width, y);
 
 }
