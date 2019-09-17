@@ -32,8 +32,8 @@ var x3 = [];
 var y3 = [];
 
 var ires = 1000; //number of points on 1st spiral
-var jres = 1000; //number of points on 2nd spiral
-var kres = 1000; //number of points on 3rd spiral
+var jres = 360; //number of points on 2nd spiral
+var kres = 360; //number of points on 3rd spiral
 iscale = 60;
 jscale = 60;
 kscale = 60;
@@ -95,19 +95,21 @@ function draw() {
   var thour = now.hour;
   
   for( let i=0; i < now.progress.min*ires ; i++ ){
-    stroke(0); strokeWeight(3);
-  point(x1[i],y1[i]) 
-  
+    stroke(0); strokeWeight(1);
+  // point(x1[i],y1[i]) 
+  line(x1[i],y1[i],x1[i+1],y1[i+1])
   }
   
     for( let j=0; j < now.progress.hour*jres ; j++ ){
     stroke(0); strokeWeight(3);
-  point(x2[j],y2[j]) 
+  // point(x2[j],y2[j]) 
+  line(x2[j],y2[j],x2[j+1],y2[j+1])
   }
   
   for( let k=0; k < now.progress.halfday*kres ; k++ ){
-    stroke(0); strokeWeight(3);
-  point(x3[k],y3[k]) 
+    stroke(0); strokeWeight(4);
+  // point(x3[k],y3[k]) 
+    line(x3[k],y3[k],x3[k+1],y3[k+1]) 
   }
   
   // calculate the spiral for seconds/minutes
@@ -128,7 +130,7 @@ function draw() {
 
   stroke(255);
   fill(255);
-  if (now.progress.hour < 0.02){rect(canvaslx/3,0,canvaslx/3,canvasly)}
+  if (now.min < 2){rect(canvaslx/3,0,canvaslx/3,canvasly)}
   
   stroke(255);
   fill(255);
