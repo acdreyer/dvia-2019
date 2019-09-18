@@ -130,7 +130,7 @@ function draw() {
 
   stroke(255);
   fill(255);
-  if (now.progress.hour < 0.02){rect(canvaslx/3,0,canvaslx/3,canvasly)}
+  if (now.progress.hour < 0.016){rect(canvaslx/3,0,canvaslx/3,canvasly)}
   
   stroke(255);
   fill(255);
