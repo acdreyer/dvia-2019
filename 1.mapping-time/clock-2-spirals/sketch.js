@@ -31,7 +31,7 @@ var y2 = [];
 var x3 = [];
 var y3 = [];
 
-var ires = 1000; //number of points on 1st spiral
+var ires = 2000; //number of points on 1st spiral
 var jres = 360; //number of points on 2nd spiral
 var kres = 360; //number of points on 3rd spiral
 iscale = 60;
@@ -95,19 +95,21 @@ function draw() {
   var thour = now.hour;
   
   for( let i=0; i < now.progress.min*ires ; i++ ){
-    stroke(0); strokeWeight(1);
+    stroke(200-now.progress.min*150,10); strokeWeight(2);
   // point(x1[i],y1[i]) 
-  line(x1[i],y1[i],x1[i+1],y1[i+1])
+  line(originxsec,originysec,x1[i],y1[i])
+  // strokeWeight(1);
+    // line(x1[i],y1[i],x1[i+1],y1[i+1])
   }
   
     for( let j=0; j < now.progress.hour*jres ; j++ ){
-    stroke(0); strokeWeight(3);
+    stroke(0); strokeWeight(2);
   // point(x2[j],y2[j]) 
   line(x2[j],y2[j],x2[j+1],y2[j+1])
   }
   
   for( let k=0; k < now.progress.halfday*kres ; k++ ){
-    stroke(0); strokeWeight(4);
+    stroke(0); strokeWeight(3);
   // point(x3[k],y3[k]) 
     line(x3[k],y3[k],x3[k+1],y3[k+1]) 
   }

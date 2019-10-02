@@ -119,7 +119,7 @@ function draw() {
 
 
   strokeWeight(1);
-      text(now.text.month, 30, 50)
+      // text(now.text.month, 30, 50)
     text(now.season + now.progress.season, 30, 100)
 
 }

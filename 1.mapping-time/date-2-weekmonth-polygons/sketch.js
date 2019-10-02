@@ -61,7 +61,7 @@ if (now.day > 7 && now.day < 15){
   
   
   if (now.weekday == 1) {
-    point(x, y)
+    circle(x, y,10*sizefact)
   }
   else if (now.weekday == 2) {
     line(x, y, x + 30*sizefact, y)

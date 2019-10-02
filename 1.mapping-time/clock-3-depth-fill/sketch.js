@@ -2,7 +2,7 @@
 var canvaslx = 640;
 var canvasly = 220;
 var sizesec = 11;
-var sizehr = 12;
+var sizehr = 11;
 
 var xcsec = (canvaslx-40)*5/6+30;
 var xcmin = (canvaslx-40)/2+20;
@@ -52,27 +52,27 @@ function draw() {
   
   stroke(0)
   for (let i = 1; i < sizesec ; i++){
-    fill(80-80*i/sizesec,40)
+    fill(140-140*i/sizesec,40)
     rect(xcsec,yc, maxsqwidth*i/sizesec, maxsqheight*i/sizesec)
   };
   for (let i = 1; i < sizesec ; i++){
-    fill(80-80*i/sizesec,40)
+    fill(140-140*i/sizesec,40)
     rect(xcmin,yc, maxsqwidth*i/sizesec, maxsqheight*i/sizesec)
   };
-  for (let i = 1; i <= sizehr ; i++){
-    fill(80-80*i/sizesec,40)
+  for (let i = 1; i < sizehr ; i++){
+    fill(140-140*i/sizesec,30)
     rect(xchr,yc, maxsqwidth*i/sizehr, maxsqheight*i/sizehr)
   };
   
   noStroke();
-  fill(0+10*now.progress.sec+80*now.progress.min,99)
+  fill(0+80*now.progress.sec+30*now.progress.min,99)
   rect(xcsec,yc, maxsqwidth*now.progress.min*10/sizesec, maxsqheight*now.progress.min*10/sizesec);
 
 
-  fill(0+10*now.progress.sec+80*now.progress.hour,99)
+  fill(0+80*now.progress.hour,99)
   rect(xcmin,yc, maxsqwidth*now.progress.hour*10/sizesec, maxsqheight*now.progress.hour*10/sizesec);
   
   fill(0+10*now.hour/12,99)
-  rect(xchr,yc, maxsqwidth*now.progress.halfday, maxsqheight*now.progress.halfday);
+  rect(xchr,yc, maxsqwidth*now.progress.halfday*10/sizehr, maxsqheight*now.progress.halfday*10/sizehr);
 
 }
