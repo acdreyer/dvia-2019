@@ -13,7 +13,8 @@ and/or [Carbon-14](https://en.wikipedia.org/wiki/Bomb_pulse).
 
 Inspect detail of each test for each country; including things such as the mushroom cloud height and crater depth.
 Draw the mushroom graphic according to size and scale of parameters.
-Possibly focus on the [largest explosions](http://www.johnstonsarchive.net/nuclear/tests/multimegtests.html).
+Possibly focus on the [largest explosions](http://www.johnstonsarchive.net/nuclear/tests/multimegtests.html)
+and/or [high-altitude explosion magnetic field strength](http://www.johnstonsarchive.net/nuclear/hane.html).
 
 
 ### Concept 3:
