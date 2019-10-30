@@ -17,6 +17,9 @@ function setup(){
 
   // log the whole dataset to the console so we can poke around in it
   print(table)
+  
+  // 
+  // var palette = Brewer.qualitative('Set1',table.columns )
 
   // set up typography
   textFont("Rokkitt")
@@ -55,6 +58,10 @@ function setup(){
     y = 100
     for (var c=1; c<table.getColumnCount(); c++){
       var value = table.getNum(r, c)
+      
+      // var clr = palette.colorForValue(name);
+      // fill(clr)
+      // circ(x,y,value)
       text(value, x, y)
       y += rowHeight
     }
