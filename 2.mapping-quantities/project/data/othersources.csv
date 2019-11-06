@@ -1,7 +1,7 @@
-Place,mSv
-Mururoa & Fangataufa,0.25
-Bikini Atoll,15
-Semipalatinsk,140
-Medical (not therapy),0.6
-Natural Background,2.4
-Max. limit Nuclear workers,50
+Place,mSv,Description
+Test site Mururoa,0.25,Nuclear test site
+Test site Bikini Atoll ,15,Nuclear test site
+Test site Semipalatinsk ,140,Nuclear test site
+Medical (not therapy),0.6,Other
+Natural Background,2.4,Other
+Max. limit Nuclear workers,50,Other

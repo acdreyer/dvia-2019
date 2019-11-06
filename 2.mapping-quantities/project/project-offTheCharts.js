@@ -119,6 +119,7 @@ function barplotColumn(tabinput, colName, x, y, plotwidth, plotheight, barfrac, 
   col = tabinput.columns.indexOf(colName)
 
   var yzero = y;
+  var xlegend = xg;
   var colwidth = plotwidth / tabinput.getRowCount();
   var barwidth = colwidth * barfrac;
   // tabinput.columns
@@ -149,32 +150,66 @@ function barplotColumn(tabinput, colName, x, y, plotwidth, plotheight, barfrac, 
 
 
   for (let i = 0; i < tabinput.getRowCount(); i++) {
-    var year = tabinput.getString(i, 0) // grab the data
+    var place = tabinput.getString(i, 0) // grab the data
     var value = tabinput.getNum(i, col)
+    var lgndval = tabinput.getString(i, 2)
     var thisyearatm = 0;
     var thisyearund = 0;
 
     // y = 100
 
-    // draw the year labels on the base---------------------------
+    // // draw the year labels on the base---------------------------
     fill(30)
     push();
     strokeWeight(0.5);
     textStyle(NORMAL)
     textAlign(RIGHT)
     textSize(10)
-    translate(x, y + 5);
-    rotate(-pi / 2);
-    text(year, 0, 12);
+    translate(x +5, y +3 );
+    rotate(-pi / 4);
+    text(place, 5, 12);
     pop()
 
 
 
-    fill(fillclr);
+    // draw the values labels on the top---------------------------
+    fill(30)
+    push();
+    strokeWeight(0.5);
+    textStyle(NORMAL)
+    textAlign(CENTER)
+    textSize(10)
+    translate(x + barwidth, y + 5);
+    // rotate(-pi / 2);
+    text(value, 0, -(map(value, 0, maxy1, 0, plotheight)) -10  );
+    pop()
 
 
+    // hardcode the qualitative pallet, since colorforvalue doesnt work..
+    var Dark2 = {
+                3: ["#1b9e77", "#d95f02", "#7570b3"],
+                4: ["#1b9e77", "#d95f02", "#7570b3", "#e7298a"],
+                5: ["#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e"],
+                6: ["#810f7c", "#810f7c", "#810f7c", "#e7298a", "#66a61e", "#e6ab02"],
+                7: ["#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02", "#a6761d"],
+                8: ["#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02", "#a6761d", "#666666"] 
+      
+    };
+
+    fill(Dark2[6][i]);
     rect(x + offset * barwidth, yzero, barwidth, -(map(value, 0, maxy1, 0, plotheight)));
-    // rect(x,yzero,barwidth,thisyearund);
+    
+// if (i==2 ){
+//     //draw the legend as well while were at it..
+//     strokeWeight(0.5);
+//     textStyle(NORMAL)
+//     textAlign(RIGHT)
+//     textSize(10)
+//     rect(xlegend - barwidth*2, y + 50, 20, barwidth)
+//     text(lgndval,xlegend - barwidth*3, y + 90)
+//     rect(x,yzero,barwidth,thisyearund);
+// }
+
 
     x += colwidth // shift rightward to next col
   }
@@ -188,17 +223,38 @@ function barplotColumn(tabinput, colName, x, y, plotwidth, plotheight, barfrac, 
 
 
 // -------------------------------------------------------------------------
-//      linegraph         linegraph       linegraph
+//      linegraph         #linegraph       linegraph
 // -------------------------------------------------------------------------
 
 function linegraph(tabinput, colName, x, y, plotwidth, plotheight, barfrac, offset, strkWght, strkClr) {
 
-  var col = tabinput.columns.indexOf(colName);
+  var col1 = tabinput.columns.indexOf(colName);
 
-  var yzero = y - plotheight / 100;
+  // var yzero = y - plotheight / 100;
   var colwidth = plotwidth / table.getRowCount();
   // var barwidth = colwidth * barfrac;
   var x2 = x;
+  
+  
+  let minx1 = 3000;
+  let maxx1 = 0;
+  let miny1 = 3000000;
+  let maxy1 = -300000;
+
+  for (var i = 0; i < (tabinput.getRowCount()); i++) {
+    if (tabinput.getNum(i, col1) <= miny1) {
+      miny1 = tabinput.getNum(i, col1);
+    }
+    if (tabinput.getNum(i, col1) >= maxy1) {
+      maxy1 = tabinput.getNum(i, col1);
+    }
+  }
+  
+  let yzero = y - map(0, miny1, maxy1, 0, plotheight);
+  
+  
+  
+  
 
   stroke(150);
   strokeWeight(1);
@@ -212,8 +268,8 @@ function linegraph(tabinput, colName, x, y, plotwidth, plotheight, barfrac, offs
     var nextinfo = tabinput.getNum(i + 1, 0) // grab the next data
     var thisyearund = 0;
     var nextyearund = 0;
-    var thisval = tabinput.getNum(i, col);
-    var nextval = tabinput.getNum(i + 1, col)
+    var thisval = map(tabinput.getNum(i, col1),miny1,maxy1,0,plotheight);
+    var nextval = map(tabinput.getNum(i + 1, col1),miny1,maxy1,0,plotheight);
     var colwidth = plotwidth / table.getRowCount();
     var year = tabinput.getString(i, 0) // grab the data
     var nextyear = tabinput.getString(i + 1, 0) // grab the data
@@ -248,6 +304,8 @@ function linegraph(tabinput, colName, x, y, plotwidth, plotheight, barfrac, offs
 
 
 
+
+
 // ---------------------------------------------------------------------
 //      Pallette  Pallette  Pallette
 // ---------------------------------------------------------------------
@@ -274,6 +332,13 @@ function getpalette(tabinput, colNames, colorstring, numberOfShades) {
   // draw a box for each year and set its color based on the total number of tests
   return Brewer.sequential(colorstring, numberOfShades, lowest, highest)
 };
+
+// -------------------------------------
+
+
+
+
+
 
 
 
@@ -349,13 +414,13 @@ function bubblePlot(tabinput, varName1, varName2, varName3, varName4, x, y, plot
   // }
 
   if (zeroratio != 0) {
-    let j = miny1;
-    // Add tics for axis here....
-    while (j <= maxy1) {
-      ytic = map(j, miny1, maxy1, 0, plotheight)
-      j += 500;
-      line(x - 2, y - ytic - ypadding1, x + 2, y - ytic - ypadding1);
-    }
+    // let j = miny1;
+    // // Add tics for axis here....
+    // while (j <= maxy1) {
+    //   ytic = map(j, miny1, maxy1, 0, plotheight)
+    //   j += 500;
+    //   line(x - 2, y - ytic - ypadding1, x + 2, y - ytic - ypadding1);
+    // }
   }
   else {
     let j = miny1;
@@ -466,18 +531,18 @@ function xaxislabel(tabinput, colName, x, y, plotwidth, plotheight, txtsze, offs
     pop()
   }
 
-  if (colName == "YEAR") {
-    push();
-    stroke(0);
-    strokeWeight(0.5);
-    textStyle(NORMAL)
-    textAlign(CENTER)
-    textSize(txtsze);
-    translate(x2, y - ypadding1);
-    // rotate(-pi / 2);
-    text("1966", 0, 12);
-    pop()
-  }
+  // if (colName == "YEAR") {
+  //   push();
+  //   stroke(0);
+  //   strokeWeight(0.5);
+  //   textStyle(NORMAL)
+  //   textAlign(CENTER)
+  //   textSize(txtsze);
+  //   translate(x2, y - ypadding1);
+  //   // rotate(-pi / 2);
+  //   text("1966", 0, 12);
+  //   pop()
+  // }
 }
 
 
@@ -502,7 +567,7 @@ function yaxislabel(input, x, y, plotwidth, plotheight, txtsze) {
 
 
 
-function yaxistics(tabinput, varName1, varName2, x, y, plotwidth, plotheight, ticsize, finetune, strkWght, strkClr, txtsze) {
+function yaxistics(tabinput, varName1, varName2, x, y, plotwidth, plotheight, ticsize, yoffset,unitscale, strkWght, strkClr, txtsze) {
 
   stroke(strkClr);
   strokeWeight(strkWght);
@@ -531,14 +596,14 @@ function yaxistics(tabinput, varName1, varName2, x, y, plotwidth, plotheight, ti
 
   let yzero = y - map(0, miny1, maxy1, 0, plotheight)
 
-    let j = miny1;
+    let j = miny1+yoffset;
     let k = j;
     // Add tics for axis here....
     while (j <= maxy1) {
       ytic = map(j, miny1, maxy1, 0, plotheight)
-      j += map(ticsize, miny1, maxy1, 0, plotheight)
-      line(x - 2, y - ytic- finetune , x + 2, y - ytic - finetune);
-      text(round(k),x-4,y-ytic )
+      line(x - 2, y - ytic  , x + 2, y - ytic );
+      text(round(k)*unitscale,x-4,y-ytic )
+      j +=ticsize;
       k += ticsize;
     }
 
@@ -628,10 +693,10 @@ function setup() {
   textSize(16);
   stroke(0);
   fill(0);
-  text('Yield at Height of Burst', (xd + ww / 2), ye - hh - ypadding1)
-  text('Year of test', (xd + ww / 2), ye + ypadding1 * 4)
+  text('Nuclear Test Altitude and Atomic Yield', (xd + ww / 2), ye - hh - ypadding1)
+  text('Year of Test', (xd + ww / 2), ye + ypadding1 * 4)
   xaxislabel(table, "WorldExternal", xx, yy + ypadding1, ww, hh, 12, 0, 1, '#e00', 5)
-  yaxislabel('Height of Burst (km)', xx, yy, ww, hh, 12)
+  yaxislabel('Height of Burst (km)', xx-25, yy, ww, hh, 12)
   //         data   value            x  y  w  h  scl       or  strW  str   fill   palette        
   var palette = getpalette(table, ["WorldExternal", "WorldIngestiona", "WorldInhalation", "WorldTotal"], "BuPu", 9);
   // bubblePlot(table, "WorldExternal", xx, yy, ww, hh, szescale, 0, 0.2, '#000', palette)
@@ -641,7 +706,7 @@ function setup() {
   // print(pallet)
   //    (tabinput,             colName,               x,  y, wdth, hgt, zerorat   scal    scal,  offset,strkWght, strkClr, palette)
   bubblePlot(below3000m, "YEAR", "HOB", "YIELD", "MON_NUM", xx, yy, ww, hh, 1, yscale, szescale, 0, 0.2, '#000', palette)
-  yaxistics(below3000m, "YEAR", "HOB", xx, yy, ww, hh, 500, 2,0.2 ,"#000",8)
+  yaxistics(below3000m, "YEAR", "HOB", xx, yy, ww, hh, 1000,360,0.001,0.2 ,"#000",8)
 
 
 
@@ -665,15 +730,15 @@ function setup() {
   textSize(16);
   stroke(0);
   fill(0);
-  text('Radiation Worldwide', (xd + ww / 2), yy - hh - ypadding1)
+  text('Radiation Fallout Worldwide Average Exposure (UNSCEAR 2000)', (xd + ww / 2), yy - hh - ypadding1)
   xaxislabel(table, "Years", xx, yy + ypadding1, ww, hh, 12, 0, 1, '#e00', 5)
-  yaxislabel('Radiation (uSv)', xx-20, yy, ww, hh, 12)
+  yaxislabel('Radiation (mSv)', xx-25, yy, ww, hh, 12)
 
   // linegraph(table,"NH_Total",xx,yy,ww,hh,bb,0,1,'#777')
   // linegraph(table,"NH_Inhalation",xx,yy,ww,hh,bb,0,1,'#ggg')
   linegraph(table, "WorldTotal", xx, yy, ww, hh, bb, 0, 1, '#000')
     //                                                 scale  stroke strkclr
-  yaxistics(table, "Year", "WorldTotal", xx, yy, ww, hh, 10, 2,0.2 ,"#000",8)
+  yaxistics(table, "Year", "WorldTotal", xx, yy, ww, hh, 20, 0,0.001,0.5 ,"#000",8)
   //"Year", "NH_External", "NH_Ingestional", "NH_Inhalation", "NH_Total", 
   // "SH_External", "SH_Ingestional", "SH_Inhalation", "SH_Total", 
   //"WorldExternal", "WorldIngestiona", "WorldInhalation", "WorldTotal"
@@ -689,12 +754,12 @@ function setup() {
 
 
 
-  // ---------------------------Plot left---------------------------
+  // ---------------------------Plot left #left---------------------------
   xx = xb
   yy = ye - ypadspecial1;
   ww = xc - xb;
   hh = ye - yb - ypadspecial1;
-  majorint = 2;
+  majorint = 3;
   bb = barfrac * 0.2;
   szescale = 0.075;
   yscale = 1;
@@ -708,15 +773,16 @@ function setup() {
   textSize(16);
   stroke(0);
   fill(0);
-  text('High Altitude Tests', (xb + ww / 2), yy - hh - ypadding1);
-  xaxislabel(highyears, "YEAR", xx, yy + ypadding2, ww, hh, 12, 0, 1, '#e00', majorint);
-  yaxislabel('Height of Burst (100 km)', xx, yy, ww, hh, 12);
+  text('High Altitude Tests', (xb + ww / 2 + xb/4), yy - hh - ypadding1);
+  xaxislabel(highyears, "YEAR", xx, yy + ypadding1*2, ww, hh, 12, 0, 1, '#e00', majorint);
+  yaxislabel('Height of Burst (km)', xx-20, yy, ww, hh, 12);
   //         data   value            x  y  w  h  scl       or  strW  str   fill   palette        
   var palette = getpalette(table, ["WorldExternal", "WorldIngestiona", "WorldInhalation", "WorldTotal"], "BuPu", 9);
   //    (tabinput,             colName,               x,  y, wdth, hgt, zerorat   scal    scal,  offset,strkWght, strkClr, palette)
   bubblePlot(above3000m, "YEAR", "HOB", "YIELD", "MON_NUM", xx, yy, ww, hh, 0, yscale, szescale, 0, 0.2, '#000', palette)
 
   // bubblePlot(below3000m, "YEAR","HOB","YIELD","MON_NUM", xx, yy, ww, hh, 1    , yscale ,szescale, 0,    0.2,      '#000',   palette)
+  yaxistics(above3000m, "YEAR", "HOB", xx, yy, ww, hh, 100000, 3000,0.001,0.5 ,"#000",8)
 
 
 
@@ -730,8 +796,7 @@ function setup() {
 
 
 
-
-  // ---------------------------------------Plot right
+  // ---------------------------------------Plot right #right
 
 
   xx = xf
@@ -744,19 +809,22 @@ function setup() {
   yscale = 1;
 
 
-  drawgrid(otherExposures, xf, yd, ww, hh, otherExposures.getRowCount(), majorint);
+  drawgrid(otherExposures, xf, yd, ww, hh-ypadding2, otherExposures.getRowCount(), majorint);
   textStyle(NORMAL);
   textAlign(CENTER);
   textSize(16);
   stroke(0);
   fill(0);
-  text('Radiation Comparison', (xf + ww / 2), yd - hh - ypadding1)
+  text('Comparative Local Fallout and \n other sources of radiation', (xf + ww / 2), yd - hh - ypadding1)
   textStyle(NORMAL);
   textAlign(RIGHT);
   // xaxislabel(otherExposures, "Years", xx, yy+ypadding1, ww, hh, 12, 0, 1, '#e00',5)
-  yaxislabel('Radiation uSv', xx, yy, ww, hh, 12)
-
-  barplotColumn(otherExposures, "mSv", xf, yd, ww, hh, bb, 0.5, '#e00')
+  yaxislabel('Radiation (mSv)', xx-25, yy, ww, hh, 12)
+  yaxistics(otherExposures, "Place", "mSv", xx, yy, ww, hh -ypadding2, 20, 0,1,0.5 ,"#000",8)
+  
+  
+  print("Otherexposures " + otherExposures)
+  barplotColumn(otherExposures, "mSv", xf, yd, ww, hh -ypadding2, bb, 0.5, '#e00')
   // barplotColumn(table,"WorldIngestiona",xx,yy,ww,hh,bb,1,'#0e0')
   // barplotColumn(table,"WorldInhalation",xx,yy,ww,hh,bb,2,'#00e')
 
@@ -774,27 +842,27 @@ function setup() {
   textFont(fontBody)
   textSize(14)
   textAlign(LEFT)
-  let s = 'Atmospheric radiation due to fallout from nuclear weapons testing reached \
- its peak in 1963, but was dramatically reduced after the signing of the Partial \
- Test Ban Treaty (PTBT) in 1963. The treaty banned nuclear tests in the atmosphere,  \
- outer space and under water, which mostly limited subsequent nuclear bomb testing \
- to under ground. However, not all nations signed the treaty and continued atmospheric \
+  let s = 'Atmospheric radioactive fallout from nuclear weapons testing reached \
+ its peak in 1963, but radiation was dramatically reduced after the signing of the Partial \
+ Test Ban Treaty (PTBT) in 1963. The treaty banned nuclear tests in the atmosphere, \
+ outer space and under water, which mostly kept subsequent nuclear bomb tests \
+ and associated ration under ground. However, not all nations signed the treaty and some continued atmospheric \
  nuclear testing. France conducted its last atmospheric test in 1974 and China in 1980. \
- Testing below ground also did not prove to be entirely safe and some containment \
- failures occurred, through venting and seepage. A notable blow-out event occurred \
+ Testing under ground also did not prove to be entirely safe and some containment \
+ failures occurred through venting and seepage. A notable blow-out event occurred \
  during the Baneberry test that released gases up to an altitude of 3km (10kft). \
  Worldwide political events and containment failures such as Baneberry kept \
  nuclear testing in the public eye and placed more pressure on nation states \
  to sign the Comprehensive Test Ban Treaty (CTBT), which aims to stop all \
- nuclear tests where explosions occur.';
-  text(s, xd, yb + ypadding1 * 3, xe - xd, yc - yb); // Text wraps within text box
+ nuclear tests; even those under ground.';
+  text(s, xd, yb + ypadding1 * 4, xe - xd, yc - yb); // Text wraps within text box
 
   textFont('Helvetica')
   textAlign(CENTER)
   textSize(20)
   // let t = "Radiation fallout effects of atmospheric and upper atmospheric Nuclear testing"
-  let t = "ATMOSPHERIC AND UPPER ATMOSPHERIC NUCLEAR TESTING \n AND ASSOCIATED FALLOUT RADIATION"
-  text(t, canvaslx / 2, ypadding1 * 2); // Text wraps within text box
+  let t = "ATMOSPHERIC AND UPPER ATMOSPHERIC NUCLEAR TESTS \n AND THEIR WORLDWIDE FALLOUT"
+  text(t, canvaslx / 2, ypadding1 * 4); // Text wraps within text box
 
 
 
@@ -864,12 +932,64 @@ function setup() {
   // ylabel()
 
 
+legendnew(xe,ye)
 
+annotations();
 
 }
 
 
 
+
+function legendnew(legx, legy, barwidth) {
+  
+ 
+  push();
+  stroke(0);
+  strokeWeight(0.2);
+  textStyle(NORMAL)
+  textAlign(CENTER)
+  
+  ssszzz = 10
+  translate((xe+xf)/2+50, (yd+ye)/2 );
+  
+  stroke(0)
+  fill(0)
+  textSize(12)
+  text("Atomic\nYield", 0, -3)
+  textSize(ssszzz);
+  text("50 Megaton", 70, 0+ssszzz/2);
+  text("10 Megaton", 50, 60+ssszzz/2);
+  text("5 Megaton", 40, 90+ssszzz/2);
+  text("1 Megaton", 35, 110+ssszzz/3);
+  text("0.2 Megaton", 35, 130+ssszzz/4);
+  
+  // rotate(-pi / 2);
+  fill("#810f7c33")
+  strokeWeight(0.2);
+  circle(0,0,70); 
+  circle(0,60,35); 
+  circle(0,90,35/2); 
+  circle(0,110,35/4); 
+  circle(0,130,35/8); 
+  
+  
+  
+  pop()
+  
+}
+
+
+function annotations(){
+  textAlign(LEFT);
+  textSize(ssszzz);
+  text("←Argus III Outer\n\tatmospheric test", 150, 82);
+  
+  fill("#FEFCF544")
+  // line(xe,yd,xf,yd)
+  // triangle(xe, yc, xe, yd, xf, yd)
+  
+};
 
 
 
