@@ -234,8 +234,8 @@ function bubblePlot(tabinput, colName, x, y, plotwidth, plotheight, scalebubble,
       var year = tabinput.getString(i, 0) // grab the data
 
       var fillClr = palette.colorForValue(thisval);
-      fillClr.levels[3] = 1;
-      print("this" + fillClr.levels)
+      fillClr.setAlpha(50)
+      print("this " + fillClr)
       drawbubbleArea(x2,yzero,thisval*scalebubble,strkWght,strkClr,fillClr)
       
       // strokeWeight(strkWght);
@@ -369,11 +369,11 @@ function setup() {
   xaxislabel(table,"WorldExternal",xx,yy,ww,hh,14,0,1,'#e00')
   yaxislabel('Radiation uSv',xx,yy,ww,hh,14)
   //         data   value            x  y  w  h  scl       or  strW  str   fill
-  // bubblePlot(table,"WorldExternal"  ,xx,yy,ww,hh,szescale, 0,  0.2,'#000','#33333344')
-  // bubblePlot(table,"WorldIngestiona",xx,yy,ww,hh,szescale, 0,  0.2,'#000','#66666644')
-  // bubblePlot(table,"WorldInhalation",xx,yy,ww,hh,szescale, 0,  0.2,'#000','#99999944')
-
   var palette = getpalette(table,["WorldExternal","WorldIngestiona","WorldInhalation","WorldTotal"],"BuPu",9);
+  bubblePlot(table,"WorldExternal"  ,xx,yy,ww,hh,szescale, 0,  0.2,'#000',palette)
+  bubblePlot(table,"WorldIngestiona",xx,yy,ww,hh,szescale, 0,  0.2,'#000',palette)
+  bubblePlot(table,"WorldInhalation",xx,yy,ww,hh,szescale, 0,  0.2,'#000',palette)
+
   // print(pallet)
   bubblePlot(table,"WorldTotal"     ,xx,yy,ww,hh,szescale, 0,  0.2,'#000',palette)
   

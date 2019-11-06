@@ -189,9 +189,9 @@ function setup(){
   drawgrid(table,xx,yy,ww,hh,table.getRowCount());
   textStyle(NORMAL); textAlign(CENTER);
   stroke(0);fill(0);text('Radiation Worldwide',(xx+ww/2),yy-hh*0.8)
-  barplotColumn(table,"WorldExternal",xx,yy,ww,hh,bb,0,'#e00')
-  barplotColumn(table,"WorldIngestiona",xx,yy,ww,hh,bb,1,'#0e0')
-  barplotColumn(table,"WorldInhalation",xx,yy,ww,hh,bb,2,'#00e')
+  barplotColumn(table,"mSv",xx,yy,ww,hh,bb,0,'#e00')
+  // barplotColumn(table,"WorldIngestiona",xx,yy,ww,hh,bb,1,'#0e0')
+  // barplotColumn(table,"WorldInhalation",xx,yy,ww,hh,bb,2,'#00e')
 
 
 
