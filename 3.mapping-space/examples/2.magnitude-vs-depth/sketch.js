@@ -19,7 +19,7 @@ var table;
 function preload() {
   //my table is comma separated value "csv"
   //and has a header specifying the columns labels
-  table = loadTable("data/significant_month.csv", "csv", "header");
+  table = loadTable("./data/significant_month.csv", "csv", "header");
 }
 
 function setup() {

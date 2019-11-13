@@ -6,7 +6,7 @@ Description of the contents of this folder and the logic of your data → retina
 
 ### Time Concept 1: Moving lines/planes
 
-This concept uses moving lines to indicate time. The retinal variable mapping
+[This concept](Antonie_TimesConcept1.pdf) uses moving lines to indicate time. The retinal variable mapping
 is done using **position**. 
 
 Whereas this idea might seem very simplistic, the idea is to expand the presentation 
@@ -22,7 +22,7 @@ giving a sense of the substance of time (related to area or **volume** or weight
 
 ### Time Concept 2: Spiral
 
-The spiral concept relies on **position** (cross-mapped with **size/orientation**)
+[The spiral concept](Antonie_TimesConcept2.pdf) relies on **position** (cross-mapped with **size/orientation**)
 to indicate passage of time. It uses the age old aspect of orientation 
 (rotation) in one axis, coupled with height (or pitch) in another.
 This plays on the idea that time in seconds, 
@@ -43,7 +43,7 @@ spiral. These lines might be coloured and could possibly add a dimension of **hu
 
 ### Time Concept 3: Opaque Inverted Pyramid
 
-The inverted pyramid would be either a 2D illusion of an inverted pyramid, 
+[The inverted pyramid](Antonie_TimesConcept3.pdf) would be either a 2D illusion of an inverted pyramid, 
 viewed from above as squares, or a real 
 3D representation of a pyramid (depending on p5.js functionality).
 
@@ -58,7 +58,7 @@ create the sense that the object is growing (**area**).
 
 ### Date Concept 1: Gear and slider (Rack and Pinion)
 
-The rack and pinion idea is to represent the day of the the week and month
+[The rack and pinion](Antonie_DatesConcept_1.pdf) idea is to represent the day of the the week and month
 by **rotation** and **translation**. The idea is to have a fixed ratio defining the passing
 of weeks and months, which might have some indicator on the gear and horizontal slider.
 
@@ -78,7 +78,7 @@ would imply the slider doesn't move so far; i.e. 28 (or 29 days) instead of 31.
 
 ### Date Concept 2: Polygon Sides and Size
 
-This concept uses **shapes** and **sizes** to indicate days of the week and days
+[This concept](Antonie_DatesConcept_2.pdf) uses **shapes** and **sizes** to indicate days of the week and days
 of the month. Days of the week would be represented by the amount of sides on the 
 shape (a polygon). Stars could also possibly be used, in which case the number
 of vertex points would correspond to the day of the week.
@@ -93,7 +93,7 @@ of the shape (coupled to the day/week of the month.)
 
 ### Date Concept 3: Organic seasons and years
 
-The idea is to use **hue** and **texture** to represent seasons and years.
+[The idea](Antonie_DatesConcept_3.pdf) is to use **hue** and **texture** to represent seasons and years.
 
 The season would be mapped to a colour spectrum where black/darkbrown "branches" 
 represent winter, light green dots (with "pink/purple blossom dots") represent
