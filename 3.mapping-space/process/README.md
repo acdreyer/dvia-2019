@@ -26,7 +26,7 @@ The vertical position of the bar will indicate the depth, whereas the length
 will indicate the margin of uncertainty related to depth (i.e. earthquake depth error.)
 It is also envisioned to possibly map the earthquake magnitude as colour.
 
-![Concept1](StonesUnturned-concept2.jpg)
+![Concept2](StonesUnturned-concept2.jpg)
 
 ### Concept 3:
 
