@@ -34,6 +34,6 @@ The final concept is a traditional grouped bar chart that shows the
 earhquake frequency vs. magnitude for earthquakes over the past 4 weeks (1 month).
 Categorical colour mapping would be used to indicate which period each bar belongs to.
 
-![Concept1](StonesUnturned-concept3.jpg)
+![Concept3](StonesUnturned-concept3.jpg)
 
 
