@@ -5,90 +5,148 @@ var table;
 var mymap;
 var pi = 3.14;
 var track;
+// var foldername = "../data/";
+// var foldername = "../data/2017/";
+// var foldername = "../data/2018/";
+// var foldername = "../data/2019/";
+var foldername = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/";
+// var filebegin = "all_";
+// var filebegin = "significant_";
+var filebegin = "4.5_";
+// var filebegin = "2.5_";
+// var filebegin = "1.0_";
+// var fileend = "month.csv";
+var fileend = "week.csv";
+// var fileend = "day.csv";
+// var fileend = "hour.csv";
+var filename = foldername + filebegin + fileend;
+
+
+// controls
+let slider;
+var slidermax=1000;
+var keepmarker;
+var faultlineStyle = {
+  "color": "#444",
+  "weight": 1.2
+};
 
 
 
-
+// ---------------------------------------------------------
+// ---------------------------------------------------------
 function preload() {
   // load the CSV data into our `table` variable and clip out the header row
-  table = loadTable("../data/all_month.csv", "csv", "header");
+  table = loadTable(filename, "csv", "header");
   geojsonFeature = loadJSON("../GIS/PB2002_boundaries.json");
-
-  //   		var shpfile = new L.Shapefile('../libraries/GIS/PB2002_boundaries.zip', {
-  // 	onEachFeature: function(feature, layer) {
-  // 		if (feature.properties) {
-  // 			layer.bindPopup(Object.keys(feature.properties).map(function(k) {
-  // 				return k + ": " + feature.properties[k];
-  // 			}).join("<br />"), {
-  // 				maxHeight: 200
-  // 			});
-  // 		}
-  // 	}
-  // });
-
-
-  fetch('../GIS/gem_active_faults_harmonized.kml')
-    .then(res => res.text())
-    .then(kmltext => {
-      // Create new kml overlay
-      const parser = new DOMParser();
-      const kml = parser.parseFromString(kmltext, 'text/xml');
-      track = new L.KML(kml);
-
-      // Adjust map to show the kml
-      // const bounds = track.getBounds();
-      // map.fitBounds(bounds);
-    });
-
-
+  // geojsonFeature2 = loadJSON("../GIS/gem_active_faults_harmonized.json");
 }
+// ---------------------------------------------------------
+// ---------------------------------------------------------
 
 
 
 
 
 
+// ---------------------------------------------------------
+// ---------------------------------------------------------
 function setup() {
+
+
   // first, call our map initialization function (look in the html's style tag to set its dimensions)
   setupMap()
   print("tectonicplates " + geojsonFeature)
-
-  // call our function (defined below) that populates the maps with markers based on the table contents
-  addCircles();
-  addFaultlines();
-  // addFaultlines2();
-
-
-
+  // print("faultlines " + geojsonFeature)
 
 
   // generate a p5 diagram that complements the map, communicating the earthquake data non-spatially
   let mycanvas = createCanvas(400, 600)
-  mycanvas.position(800, 0)
-  background(240)
+  mycanvas.position(740, 0)
+  frameRate(5);
 
+
+  // create a slider to select an earthquake
+  slider = createSlider(0, slidermax, slidermax*0.5);
+  slider.position(790, 125);
+  slider.style('width', '300px');
+
+
+  // call our function (defined below) that populates the maps with markers based on the table contents
+  addFaultlines();
+  addCircles();
+  // addFaultlines2();
+  
+  
+  
+  var icon = L.divIcon({
+    iconSize: [20, 20],
+    // iconAnchor: [0,0],
+    // popupAnchor: [10, 0],
+    shadowSize: [0, 0],
+    className: 'my-icon-class' 
+})
+
+//marker latlng
+var ll = L.latLng(40.795, -73.953)
+
+// create marker
+var marker = L.marker(ll, {
+  icon: icon,
+  // id: "animatedIconID",
+  title: 'Corresponding Earthquake'
+})
+keepmarker=marker;
+marker.addTo(mymap)
+
+  var myIcon = document.getElementsByClassName('my-icon-class')
+  var keepAnimCoord = myIcon[0].style.transform;
+  // console.log("Myicon properties "+ myIcon[0].style.transform)
+  // myIcon[0].classList.add("animated-icon");
+
+}
+// ---------------------------------------------------------
+// ---------------------------------------------------------
+
+
+
+
+
+
+
+// ---------------------------------------------------------
+// ---------------------------------------------------------
+function draw() {
+  
+  
+  // var val;
+  val = slider.value();
+  print(val);
+  // background(val*0.255);
+  background(240)
   fill(0)
+  textAlign(LEFT);
   noStroke()
   textSize(16)
-  text(`Plotting ${table.getRowCount()} seismic events`, 20, 40)
-  text(`Largest Magnitude: ${columnMax(table, "mag")}`, 20, 60)
-  text(`Greatest Depth: ${columnMax(table, "depth")}`, 20, 80)
-
-
-
+  text(`Showing ${table.getRowCount()} seismic events`, 40, 60)
+  text(`Max. Magnitude: ${columnMax(table, "mag")}`, 40, 80)
+  text(`Max. Depth: ${columnMax(table, "depth")}`, 40, 100)
+  
 
 
   //------------Plot  #right
   var barfrac = 1;
   var pi = 3.14;
   xx = 50
-  yy = 100;
+  yy = 175;
   ww = 300;
-  hh = 500;
+  hh = 400;
   majorint = 2;
   bb = barfrac * 0.5;
   szescale = 0.075;
   yscale = 1;
+
+
 
 
   //   drawgrid(table, xf, yd, ww, hh-ypadding2, otherExposures.getRowCount(), majorint);
@@ -97,7 +155,7 @@ function setup() {
   textSize(16);
   stroke(0);
   fill(0);
-  text('Earthquake depth', 200, 20)
+  text('Earthquake depth (km)', 200, 20)
   textStyle(NORMAL);
   textAlign(RIGHT);
   // xaxislabel(table, "column", xx, yy, ww, hh    , 12, 0, 1, '#e00',5)
@@ -105,46 +163,34 @@ function setup() {
   // (tabinput, varName1, x, y, plotwidth, plotheight, ticsize, yoffset,unitscale, strkWght, strkClr, txtsze)
   yaxistics(table, "depth", xx, yy, ww, hh - 20, 20, 0, 1, 0.5, "#000", 8)
 
-  print("Data: " + table)
+  // print("Data: " + table)
   //        (tabinput, colName, x, y, plotwidth, plotheight, barfrac, offset, fillclr) 
-  barplotColumn(table, "depth", xx, yy, ww, hh - 20, bb, 0.5, '#e00')
-
-
-
-
-
-
-
-
-
+  sliderSelectBar = val;
+  barplotColumn(table, "depth", xx, yy, ww, hh - 20, bb, 0.5, '#e00',sliderSelectBar,keepmarker)
+  
 }
 
 
 
 
-
-
+// ---------------------------------------------------------
+// ---------------------------------------------------------
 function setupMap() {
-  /*
-  LEAFLET CODE
-
-  In this case "L" is leaflet. So whenever you want to interact with the leaflet library
-  you have to refer to L first.
-  so for example L.map('mapid') or L.circle([lat, long])
-  */
-
+  /*LEAFLET CODE*/
   // create your own map
-  mymap = L.map('quake-map').setView([51.505, -0.09], 3);
+  mymap = L.map('quake-map', {
+    maxZoom: 10,
+    minZoom: 1.499,
+    maxBounds: [
+      //south west
+      [-89.9, -220],
+      //north east
+      [89.9, 220]
+    ],
+  }).setView([25, 0], 1.49);
 
-  // load a set of map tiles – choose from the different providers demoed here:
-  // https://leaflet-extras.github.io/leaflet-providers/preview/
-  // L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-  //     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-  //     maxZoom: 18,
-  //     id: 'mapbox.streets',
-  //     accessToken: 'pk.eyJ1IjoiZHZpYTIwMTciLCJhIjoiY2o5NmsxNXIxMDU3eTMxbnN4bW03M3RsZyJ9.VN5cq0zpf-oep1n1OjRSEA'
-  // }).addTo(mymap);
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}', {
+
+  var baselayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}', {
     attribution: 'Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri',
     maxZoom: 13,
     id: 'oceanbasemap'
@@ -155,20 +201,27 @@ function setupMap() {
 
 
 
+// ---------------------------------------------------------
+// ---------------------------------------------------------
 
+
+
+
+
+
+// ---------------------------------------------------------
+// ---------------------------------------------------------
 function addFaultlines() {
-  var myLayer = L.geoJSON().addTo(mymap);
-  myLayer.addData(geojsonFeature);
+  // var myLayer = L.geoJSON().addTo(mymap);
+  // myLayer.addData(geojsonFeature,{
+  //     style: faultlineStyle
+  //   });
+var tectonicPlatelayer =  L.geoJSON(geojsonFeature, {
+    style: faultlineStyle
+  }).addTo(mymap);
 }
-
-
-
-
-// function addFaultlines2() {
-//   // Load kml file
-// var myLayer2 = L.KML().addTo(mymap);
-//   myLayer2.addData(track);
-// }
+// ---------------------------------------------------------
+// ---------------------------------------------------------
 
 
 
@@ -176,6 +229,10 @@ function addFaultlines() {
 
 
 
+
+
+// ---------------------------------------------------------
+// ---------------------------------------------------------
 
 function addCircles() {
   // calculate minimum and maximum values for magnitude and depth
@@ -197,23 +254,94 @@ function addCircles() {
     }
 
     // create a new dot
+        var magnitude = row.getNum('mag');
+    var popupdepth = row.getNum('depth')
+    var popupdepthError = row.getNum('depthError')
     var circle = L.circle([row.getNum('latitude'), row.getNum('longitude')], {
       color: 'red', // the dot stroke color
       fillColor: '#f03', // the dot fill color
-      fillOpacity: 0.25, // use some transparency so we can see overlaps
-      radius: row.getNum('mag') * 40000
-    })
+      fillOpacity: 0.05, // use some transparency so we can see overlaps
+      radius: row.getNum('mag') * 40000,
+      weight: 0.4
+    }).bindPopup("Magnitude: " + magnitude + "<br>Depth: " + popupdepth + " km<br>Depth Error: " + popupdepthError + " km");
 
-    // place the new dot on the map
+
+    var points = L.circle([row.getNum('latitude'), row.getNum('longitude')], {
+      color: 'red',
+      fillColor: '#f03',
+      fillOpacity: 1,
+      radius: magnitude * 40,
+      weight: 2
+    });
+    var circle2 = L.circle([row.getNum('latitude'), row.getNum('longitude')], {
+      color: 'red',
+      fillColor: '#f03',
+      fillOpacity: 0.1,
+      radius: magnitude * 30000,
+      weight: 0.4
+    });
+    var circle3 = L.circle([row.getNum('latitude'), row.getNum('longitude')], {
+      color: 'red',
+      fillColor: '#f03',
+      fillOpacity: 0.15,
+      radius: magnitude * 20000,
+      weight: 0.6
+    });
+    var circle4 = L.circle([row.getNum('latitude'), row.getNum('longitude')], {
+      color: 'red',
+      fillColor: '#f03',
+      fillOpacity: 0.2,
+      radius: magnitude * 10000,
+      weight: 0.8
+    });
+
+    var allxtraCircles = L.layerGroup([circle2, circle3, circle4]);
+    allxtraCircles.addTo(mymap);
     circle.addTo(mymap);
-    circle.bindPopup("Test");
+
+//   var baseMaps = {
+//     "BaseLayer": baselayer
+// };
+
+// var overlayMaps = {
+//     "ExtraCircles": allxtraCircles
+// };
+// L.control.layers(baseMaps,overlayMaps).addTo(mymap);
+
+
+
+    // // place the new dot on the map
+    // if (filebegin == "all_") {
+    //   circle.addTo(mymap);
+    // }
+    // else if (filebegin == "2.5_" || "1.0_") {
+    //   points.addTo(mymap);
+    //   circle.addTo(mymap);
+    // }
+    // else if (filebegin == "4.5_") {
+    //   // circle.addTo(mymap);
+    //   circle2.addTo(mymap);
+    //   circle3.addTo(mymap);
+    //   circle4.addTo(mymap);
+    // }
+    // else {
+    //   circle.addTo(mymap);
+    // }
   }
+
+
 }
+// ---------------------------------------------------------
+// ---------------------------------------------------------
 
 
 
 
 
+
+
+// ---------------------------------------------------------
+// ---------------------------------------------------------
 // removes any circles that have been added to the map
 function removeAllCircles() {
   mymap.eachLayer(function(layer) {
@@ -222,11 +350,15 @@ function removeAllCircles() {
     }
   })
 }
+// ---------------------------------------------------------
+// ---------------------------------------------------------
 
 
 
 
 
+// ---------------------------------------------------------
+// ---------------------------------------------------------
 // get the maximum value within a column
 function columnMax(tableObject, columnName) {
   // get the array of strings in the specified column
@@ -238,11 +370,14 @@ function columnMax(tableObject, columnName) {
   // find the largest value in the column
   return _.max(colValues);
 }
+// ---------------------------------------------------------
+// ---------------------------------------------------------
 
 
 
 
-
+// ---------------------------------------------------------
+// ---------------------------------------------------------
 // get the minimum value within a column
 function columnMin(tableObject, columnName) {
   // get the array of strings in the specified column
@@ -254,6 +389,8 @@ function columnMin(tableObject, columnName) {
   // find the largest value in the column
   return _.min(colValues);
 }
+// ---------------------------------------------------------
+// ---------------------------------------------------------
 
 
 
@@ -261,9 +398,27 @@ function columnMin(tableObject, columnName) {
 
 
 
-
-
-
+// ---------------------------------------------------------
+// ---------------------------------------------------------
+function addCircleHighlight(circLat,circLong,magnitude){
+    var circleHighlight = L.circleMarker([circLat, circLong], {
+      color: 'red', // the dot stroke color
+      fillColor: '#f03', // the dot fill color
+      fillOpacity: 0.05, // use some transparency so we can see overlaps
+      radius: magnitude* 40000,
+      weight: 0.4
+    });
+      // var myLayer = L.geoJSON().addTo(mymap);
+  // myLayer.addData(geojsonFeature,{
+  //     style: faultlineStyle
+  //   });
+  
+var highlightlayer = L.layerGroup([circleHighlight]);
+    highlightlayer.addTo(mymap);
+    // mymap.removeLayer(highlightlayer)
+}
+// ---------------------------------------------------------
+// ---------------------------------------------------------
 
 
 
@@ -273,14 +428,18 @@ function columnMin(tableObject, columnName) {
 // Barplot      Barplot     Barplot    #barplot
 // ------------------------------------------------
 
-function barplotColumn(tabinput, colName, x, y, plotwidth, plotheight, barfrac, offset, fillclr) {
+function barplotColumn(tabinput, colName, x, y, plotwidth, plotheight, barfrac, offset, fillclr,sliderSelectBar,marker) {
 
 
-  col = tabinput.columns.indexOf(colName)
+  col = tabinput.columns.indexOf(colName);
+  col2 = tabinput.columns.indexOf("latitude");
+  col3 = tabinput.columns.indexOf("longitude");
+  col4 = tabinput.columns.indexOf("mag");
 
   var yzero = y;
   var colwidth = plotwidth / tabinput.getRowCount();
   var barwidth = colwidth * barfrac;
+  var totalN = tabinput.getRowCount();
   // tabinput.columns
 
   // draw the zero axis labels on the base---------------------------
@@ -295,7 +454,7 @@ function barplotColumn(tabinput, colName, x, y, plotwidth, plotheight, barfrac, 
   let miny1 = 3000000;
   let maxy1 = -300000;
 
-  for (var i = 0; i < (tabinput.getRowCount()); i++) {
+  for (var i = 0; i < (totalN); i++) {
     if (tabinput.getNum(i, col) <= miny1) {
       miny1 = tabinput.getNum(i, col);
     }
@@ -303,15 +462,21 @@ function barplotColumn(tabinput, colName, x, y, plotwidth, plotheight, barfrac, 
       maxy1 = tabinput.getNum(i, col);
     }
   }
-  print(miny1)
-  print(maxy1)
+  // print(miny1)
+  // print(maxy1)
 
 
 
-  for (let i = 0; i < tabinput.getRowCount(); i++) {
+  for (let i = 0; i < totalN; i++) {
     var place = tabinput.getString(i, 0) // grab the data
     var value = tabinput.getNum(i, col)
     var lgndval = tabinput.getString(i, 2)
+    
+
+    
+    var thisBari = round(map(sliderSelectBar,0,slidermax,0,totalN-1));
+    // if (thisBari == i){print(thisBari)}
+    // addCircleHighlight(latval,longval,magval)
 
 
     // // draw the year labels on the base---------------------------
@@ -353,8 +518,29 @@ function barplotColumn(tabinput, colName, x, y, plotwidth, plotheight, barfrac, 
     };
 
     // fill(Dark2[6][i]);
-    fill(150)
+    // Create color for selected bar using slider value
+    if (thisBari == i){
+      fill('red');
+      stroke('red');
+      
+      
+    var latval = tabinput.getNum(i, col2)
+    var longval = tabinput.getNum(i, col3)
+    var magval = tabinput.getNum(i, col4)
+    var latlng = L.latLng(latval, longval);
+    marker.setLatLng(latlng);
+    // console.log(latlng)
+    // mymap.panTo(latlng);
+      
+      
+    }
+    else {
+      fill(150);
+      stroke(150);
+    }
+    
     rect(x + offset * barwidth, yzero, barwidth, (map(value, 0, maxy1, 0, plotheight)));
+    fill(150);
 
     // if (i==2 ){
     //     //draw the legend as well while were at it..
@@ -372,7 +558,8 @@ function barplotColumn(tabinput, colName, x, y, plotwidth, plotheight, barfrac, 
   }
 
 }
-
+// ---------------------------------------------------------
+// ---------------------------------------------------------
 
 
 
@@ -442,11 +629,13 @@ function xaxislabel(tabinput, colName, x, y, plotwidth, plotheight, txtsze, offs
   //   pop()
   // }
 }
+// ---------------------------------------------------------
+// ---------------------------------------------------------
 
 
 
-
-
+// ---------------------------------------------------------
+// ---------------------------------------------------------
 function yaxislabel(input, x, y, plotwidth, plotheight, txtsze) {
   push();
   stroke(0);
@@ -459,12 +648,14 @@ function yaxislabel(input, x, y, plotwidth, plotheight, txtsze) {
   text(input, 0, -5);
   pop()
 }
+// ---------------------------------------------------------
+// ---------------------------------------------------------
 
 
 
 
-
-
+// ---------------------------------------------------------
+// ---------------------------------------------------------
 function yaxistics(tabinput, varName1, x, y, plotwidth, plotheight, ticsize, yoffset, unitscale, strkWght, strkClr, txtsze) {
 
   stroke(strkClr);
@@ -483,11 +674,11 @@ function yaxistics(tabinput, varName1, x, y, plotwidth, plotheight, ticsize, yof
   for (var i = 0; i < (tabinput.getRowCount()); i++) {
     if (tabinput.getNum(i, col1) <= miny1) {
       miny1 = tabinput.getNum(i, col1);
-      print("The min is: " + miny1)
+      // print("The min is: " + miny1)
     }
     if (tabinput.getNum(i, col1) >= maxy1) {
       maxy1 = tabinput.getNum(i, col1);
-      print("The max is: " + maxy1)
+      // print("The max is: " + maxy1)
     }
   }
 
@@ -541,3 +732,5 @@ function drawgrid(tabinput, xbeg, y, plotwidth, plotheight, xaxistics, majorint)
   // rows
 
 }
+// ---------------------------------------------------------
+// ---------------------------------------------------------
