@@ -231,36 +231,26 @@
     return _map
   }
 
-
   function mirrored(features){
-    var shiftLeft = points => _.map(points, ([lng, lat]) => [lng-360, lat])
-    var shiftRight = points => _.map(points, ([lng, lat]) => [lng+360, lat])
+    var shiftWest = points => _.map(points, ([lng, lat]) => [lng-360, lat])
+    var shiftEast = points => _.map(points, ([lng, lat]) => [lng+360, lat])
 
-    return _.map(features, ({type, properties, geometry}) => {
-      var coords = geometry.coordinates
-      switch (geometry.type){
-        case "MultiLineString":
-        coords = coords.concat(_.map(coords, shiftLeft), _.map(coords, shiftRight))
-        break
+    var mirror = {
+      Point:           coords => [coords, shiftWest([coords])[0], shiftEast([coords])[0]],
+      LineString:      coords => [coords, shiftWest(coords), shiftEast(coords)],
+      Polygon:         coords => [coords, _.map(coords, shiftWest), _.map(coords, shiftEast)],
+      MultiPoint:      coords => coords.concat(shiftWest(coords), shiftEast(coords)),
+      MultiLineString: coords => coords.concat(_.map(coords, shiftWest), _.map(coords, shiftEast)),
+      MultiPolygon:    coords => _.map(coords, poly => poly.concat(_.map(poly, shiftWest), _.map(poly, shiftEast))),
+    }
 
-        case "LineString":
-        geometry.type = "MultiLineString"
-        coords = [coords, shiftLeft(coords), shiftRight(coords)]
-        break
-
-        case "MultiPolygon":
-        coords = _.map(coords, poly => poly.concat(_.map(poly, shiftLeft), _.map(poly, shiftRight)))
-        break
-
-        case "Polygon":
-        geometry.type = "MultiPolygon"
-        coords = [coords, _.map(coords, shiftLeft), _.map(coords, shiftRight)]
-        break
+    return _.map(features, ({type, properties, geometry}) => ({
+      type, properties,
+      geometry:{
+        type:geometry.type.replace(/^(Multi)?/, 'Multi'),
+        coordinates:mirror[geometry.type](geometry.coordinates)
       }
-      geometry.coordinates = coords
-
-      return {type, properties, geometry}
-    })
+    }))
   }
 
   function findFault(srcLat, srcLng, doublecheck=false){
