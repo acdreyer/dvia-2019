@@ -31,8 +31,8 @@ var rwi = [];
 var pi = 3.14;
 
 // Initialize sizes/resolution limits
-var canvasx = 300;
-var canvasy = 300;
+var canvasx = 400;
+var canvasy = 400;
 var maxtexturewint = 600;
 var maxtexture = 300;
 var maxtexturesum = maxtexture;
@@ -41,7 +41,7 @@ var maxtexturefal = maxtexture;
 var maxtwigL = 25;
 var maxtwigt = 3;
 var maxleaf = 20;
-var circD = canvasx * 2 / 3;
+var circD = canvasx  / 2;
 var circR = circD / 2;
 var c = 0.55191502449;
 
