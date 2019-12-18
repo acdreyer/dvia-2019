@@ -1,0 +1,77 @@
+    html, body {
+      padding: 0;
+      margin: 0;
+    }
+
+    /* default dimensions for the leaflet map */
+    #quake-map{
+      width: 740px;
+      height: 600px;
+      /*transform: translateY(75px);*/
+      /*position: fixed;*/
+    }
+    /*#sketch-holder{*/
+    /*  width: 540px;*/
+    /*  height: 600px;*/
+    /*  position: fixed;*/
+    /*}*/
+    
+.my-icon-class{
+  width: 10px;
+  height: 10px;
+  /*color: red;*/
+  /*border: 1px solid;*/
+  background-color: rgba(255,255,0,0.5);
+  border-radius: 50%;
+  transform-origin: center;
+  /*box-shadow: 0px 0px 4px red;*/
+  z-index: -100;
+}
+.animated-icon{
+  width: 20px;
+  height: 20px;
+  background-color: rgba(255,0,0,0.5);
+  border-radius: 50%;
+  transform-origin: center;
+  box-shadow: 0px 0px 4px red;
+  /*transition: all 1s ;*/
+  
+  animation: scaleIn 2s infinite cubic-bezier(.36, .11, .89, .7);
+}
+@keyframes scaleIn {
+  from {
+    transform-origin: center;
+    -webkit-transform: scale(.2, .2);
+    opacity: 0.8;
+  }
+  to {
+    transform-origin: center;
+    -webkit-transform: scale(1.5, 1.5);
+    opacity: 0.3;
+  }
+}
+
+header {
+  /*font-size: 0.5em;*/
+  color: white;
+  padding-top: 10px;
+  /*vertical-align: center;*/
+  height:75px;
+  display: block;
+  width: 1280;
+  text-align: center;
+  background-color: steelblue;
+}
+
+.bodytext p {
+  /*background-color: grey;*/
+  font-size: 14px;
+  padding-top: 10px;
+  width: 1280;
+  text-align: center;
+  padding-left: 10px;
+  padding-right: 10px;
+  height: 89px;
+  display: block;
+  /*border: 1px;*/
+}
