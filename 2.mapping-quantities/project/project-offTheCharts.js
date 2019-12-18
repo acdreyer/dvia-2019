@@ -1,8 +1,20 @@
-var table
-var pi = 3.14
 
 
 
+// This code creates a poster type static data viz. using P5.js
+// The main graphic is located in the centre, with two columns on either side.
+// The layout is defined by initial parameters and plotting is done with dedicated
+// plotting functions. A text description is also shown above the main plot area.
+
+
+
+
+// Initialize variables;
+var table;
+var pi = 3.14;
+
+
+// Layout
 var canvaslx = 1366;
 var canvasly = 768;
 var ybottom = 60;
@@ -52,19 +64,26 @@ var lineweight = 3;
 
 
 // -------------------------------------------------------------------------
+// Load all the data from CSV files. These files have been pre-formatted and 
+// filtered to aid processing in this graphic.
+// Atomic test data is from Johnston's archive.
+// Radiation exposures are from UNSCEAR 2000
 function preload() {
   table = loadTable('./data/AvgAnnEffDoseAtmTest_uSv.csv', 'csv', 'header');
 
-  above3000m = loadTable('./data/johnstons_subset_above3048m_YieldZtoA.csv', 'csv', 'header')
+  // above3000m = loadTable('./data/johnstons_subset_above3048m_YieldZtoA.csv', 'csv', 'header')
   below3000m = loadTable('./data/johnstons_subset_below3048m_YieldZtoA.csv', 'csv', 'header')
-  above6000m = loadTable('./data/johnstons_subset_above6000m_YieldZtoA.csv', 'csv', 'header')
-  below6000m = loadTable('./data/johnstons_subset_below6000m_YieldZtoA.csv', 'csv', 'header')
+  // above6000m = loadTable('./data/johnstons_subset_above6000m_YieldZtoA.csv', 'csv', 'header')
+  // below6000m = loadTable('./data/johnstons_subset_below6000m_YieldZtoA.csv', 'csv', 'header')
+  
+  gapHighyears = loadTable('./data/johnstons_subset_gapyears_YieldZtoA.csv', 'csv', 'header')
   otherExposures = loadTable('./data/othersources.csv', 'csv', 'header')
   highyears = loadTable('./data/highyears.csv', 'csv', 'header')
 
   fontHeadline = loadFont('./assets/CFNuclearWar-Regular.ttf');
   fontBody = loadFont('./assets/veteran_typewriter.ttf');
 }
+// -------------------------------------------------------------------------
 
 
 
@@ -131,8 +150,6 @@ function barplotColumn(tabinput, colName, x, y, plotwidth, plotheight, barfrac, 
 
 
   // get min and max
-  // let minx1= 3000;
-  // let maxx1 = 0;
   let miny1 = 3000000;
   let maxy1 = -300000;
 
@@ -149,6 +166,7 @@ function barplotColumn(tabinput, colName, x, y, plotwidth, plotheight, barfrac, 
 
 
 
+  // Cycle through the table rows and get data
   for (let i = 0; i < tabinput.getRowCount(); i++) {
     var place = tabinput.getString(i, 0) // grab the data
     var value = tabinput.getNum(i, col)
@@ -156,7 +174,6 @@ function barplotColumn(tabinput, colName, x, y, plotwidth, plotheight, barfrac, 
     var thisyearatm = 0;
     var thisyearund = 0;
 
-    // y = 100
 
     // // draw the year labels on the base---------------------------
     fill(30)
@@ -185,7 +202,7 @@ function barplotColumn(tabinput, colName, x, y, plotwidth, plotheight, barfrac, 
     pop()
 
 
-    // hardcode the qualitative pallet, since colorforvalue doesnt work..
+    // hardcode the qualitative pallet, since colorforvalue doesnt seem to work..
     var Dark2 = {
                 3: ["#1b9e77", "#d95f02", "#7570b3"],
                 4: ["#1b9e77", "#d95f02", "#7570b3", "#e7298a"],
@@ -241,6 +258,8 @@ function linegraph(tabinput, colName, x, y, plotwidth, plotheight, barfrac, offs
   let miny1 = 3000000;
   let maxy1 = -300000;
 
+
+  // Cycle through the table rows
   for (var i = 0; i < (tabinput.getRowCount()); i++) {
     if (tabinput.getNum(i, col1) <= miny1) {
       miny1 = tabinput.getNum(i, col1);
@@ -346,12 +365,6 @@ function getpalette(tabinput, colNames, colorstring, numberOfShades) {
 
 
 
-
-
-
-
-
-
 // -------------------------------------------------------------------------
 //            Bubbles bubble bubbles #bubbles
 // -------------------------------------------------------------------------
@@ -371,8 +384,10 @@ function drawbubbleArea(x, y, A, strkWght, strkClr, fillclr) {
 }
 
 // -------------------------------------------------------------------------
+
 //                  (table,   "WorldTotal"                        ,xx,yy,     ww,         hh   yoffsetfrac scaley ,szescale,   0,        0.2,  '#000' , palette)
 function bubblePlot(tabinput, varName1, varName2, varName3, varName4, x, y, plotwidth, plotheight, zeroratio, yscale, scalebubble, offset, strkWght, strkClr, palette) {
+
 
   // find the column number (counting from 0)
   var col1 = tabinput.columns.indexOf(varName1);
@@ -387,6 +402,7 @@ function bubblePlot(tabinput, varName1, varName2, varName3, varName4, x, y, plot
   let miny1 = 3000000;
   let maxy1 = -300000;
 
+  // cycle through the table
   for (var i = 0; i < (tabinput.getRowCount()); i++) {
     if (tabinput.getNum(i, col1) <= minx1) {
       minx1 = tabinput.getNum(i, col1);
@@ -403,11 +419,8 @@ function bubblePlot(tabinput, varName1, varName2, varName3, varName4, x, y, plot
   }
 
 
-
-
-
   // if (zeroratio){
-  let yzero = y - map(0, miny1, maxy1, 0, plotheight)
+  let yzero = y - map(0, miny1, maxy1, 0, plotheight-ypadding1*2)
   // }
   // else { 
   //   let yzero = y- ypadding1;
@@ -428,7 +441,7 @@ function bubblePlot(tabinput, varName1, varName2, varName3, varName4, x, y, plot
     while (j <= maxy1) {
       ytic = map(j, miny1, maxy1, 0, plotheight)
       j += 100000;
-      line(x - 2, y - ytic - 3, x + 2, y - ytic - 3);
+      // line(x - 2, y - ytic - 3*0, x + 2, y - ytic - 3);
     }
   }
 
@@ -443,6 +456,7 @@ function bubblePlot(tabinput, varName1, varName2, varName3, varName4, x, y, plot
   line(x, y, x, y - plotheight + ypadding1)
 
 
+
   // --------------------draw bubblechart
   for (var i = 0; i < (tabinput.getRowCount()); i++) {
 
@@ -450,7 +464,7 @@ function bubblePlot(tabinput, varName1, varName2, varName3, varName4, x, y, plot
     let thismon = tabinput.getNum(i, col4) / 12; // grab the data
     let thisx = map(tabinput.getNum(i, col1) + thismon, minx1, maxx1, x, x + plotwidth); // grab the data
     let year = tabinput.getString(i, col1); // grab the data
-    let thisy = map(tabinput.getNum(i, col2), miny1, maxy1, 0, plotheight - ypadding1 * 2); // grab the data
+    let thisy = map(tabinput.getNum(i, col2), miny1, maxy1, 0, plotheight - ypadding1*2 ); // grab the data
     // print(thisy)
     let thisSze = tabinput.getNum(i, col3); // grab the data
 
@@ -594,7 +608,7 @@ function yaxistics(tabinput, varName1, varName2, x, y, plotwidth, plotheight, ti
   }
 
 
-  let yzero = y - map(0, miny1, maxy1, 0, plotheight)
+  let yzero = y - map(0, miny1, maxy1, 0, plotheight-ypadding1*2)
 
     let j = miny1+yoffset;
     let k = j;
@@ -602,7 +616,7 @@ function yaxistics(tabinput, varName1, varName2, x, y, plotwidth, plotheight, ti
     while (j <= maxy1) {
       ytic = map(j, miny1, maxy1, 0, plotheight)
       line(x - 2, y - ytic  , x + 2, y - ytic );
-      text(round(k)*unitscale,x-4,y-ytic )
+      text(round(k+yoffset)*unitscale,x-4,y-ytic+2 )
       j +=ticsize;
       k += ticsize;
     }
@@ -676,7 +690,7 @@ function setup() {
 
 
 
-  // ---------------------------Plot bottom---------------------------
+  // ---------------------------Plot #bottom bottom---------------------------
   xx = xd
   yy = ye
   ww = xe - xd;
@@ -693,7 +707,7 @@ function setup() {
   textSize(16);
   stroke(0);
   fill(0);
-  text('Nuclear Test Altitude and Atomic Yield', (xd + ww / 2), ye - hh - ypadding1)
+  text('Nuclear Test Altitudes with Atomic Yields', (xd + ww / 2), ye - hh - ypadding1)
   text('Year of Test', (xd + ww / 2), ye + ypadding1 * 4)
   xaxislabel(table, "WorldExternal", xx, yy + ypadding1, ww, hh, 12, 0, 1, '#e00', 5)
   yaxislabel('Height of Burst (km)', xx-25, yy, ww, hh, 12)
@@ -706,7 +720,7 @@ function setup() {
   // print(pallet)
   //    (tabinput,             colName,               x,  y, wdth, hgt, zerorat   scal    scal,  offset,strkWght, strkClr, palette)
   bubblePlot(below3000m, "YEAR", "HOB", "YIELD", "MON_NUM", xx, yy, ww, hh, 1, yscale, szescale, 0, 0.2, '#000', palette)
-  yaxistics(below3000m, "YEAR", "HOB", xx, yy, ww, hh, 1000,360,0.001,0.2 ,"#000",8)
+  yaxistics(below3000m, "YEAR", "HOB", xx, yy, ww, hh, 1000,360/2,0.001,0.2 ,"#000",8)
 
 
 
@@ -773,16 +787,16 @@ function setup() {
   textSize(16);
   stroke(0);
   fill(0);
-  text('High Altitude Tests', (xb + ww / 2 + xb/4), yy - hh - ypadding1);
+  text('Peak Test Years, \nAltitudes and Yields', (xb + ww / 2 + xb/4), yy - hh -16 - ypadding1);
   xaxislabel(highyears, "YEAR", xx, yy + ypadding1*2, ww, hh, 12, 0, 1, '#e00', majorint);
-  yaxislabel('Height of Burst (km)', xx-20, yy, ww, hh, 12);
+  yaxislabel('Height of Burst (km)', xx-25, yy, ww, hh, 12);
   //         data   value            x  y  w  h  scl       or  strW  str   fill   palette        
   var palette = getpalette(table, ["WorldExternal", "WorldIngestiona", "WorldInhalation", "WorldTotal"], "BuPu", 9);
   //    (tabinput,             colName,               x,  y, wdth, hgt, zerorat   scal    scal,  offset,strkWght, strkClr, palette)
-  bubblePlot(above3000m, "YEAR", "HOB", "YIELD", "MON_NUM", xx, yy, ww, hh, 0, yscale, szescale, 0, 0.2, '#000', palette)
+  bubblePlot(gapHighyears, "YEAR", "HOB", "YIELD", "MON_NUM", xx, yy, ww, hh, 0, yscale, szescale, 0, 0.2, '#000', palette)
 
   // bubblePlot(below3000m, "YEAR","HOB","YIELD","MON_NUM", xx, yy, ww, hh, 1    , yscale ,szescale, 0,    0.2,      '#000',   palette)
-  yaxistics(above3000m, "YEAR", "HOB", xx, yy, ww, hh, 100000, 3000,0.001,0.5 ,"#000",8)
+  yaxistics(gapHighyears, "YEAR", "HOB", xx, yy, ww, hh, 100000, 1375/2,0.001,0.5 ,"#000",8)
 
 
 
@@ -843,17 +857,17 @@ function setup() {
   textSize(14)
   textAlign(LEFT)
   let s = 'Atmospheric radioactive fallout from nuclear weapons testing reached \
- its peak in 1963, but radiation was dramatically reduced after the signing of the Partial \
+ its peak in 1963 after an initial moratorium on testing temporarily failed. \
+ However radiation was dramatically reduced after the signing of the Partial \
  Test Ban Treaty (PTBT) in 1963. The treaty banned nuclear tests in the atmosphere, \
  outer space and under water, which mostly kept subsequent nuclear bomb tests \
- and associated ration under ground. However, not all nations signed the treaty and some continued atmospheric \
+ underground. However, not all nations signed the treaty and some Countries continued atmospheric \
  nuclear testing. France conducted its last atmospheric test in 1974 and China in 1980. \
- Testing under ground also did not prove to be entirely safe and some containment \
- failures occurred through venting and seepage. A notable blow-out event occurred \
- during the Baneberry test that released gases up to an altitude of 3km (10kft). \
- Worldwide political events and containment failures such as Baneberry kept \
- nuclear testing in the public eye and placed more pressure on nation states \
- to sign the Comprehensive Test Ban Treaty (CTBT), which aims to stop all \
+ Underground testing did not prove to be entirely safe and some containment \
+ failures occurred through venting and seepage. Human populations close to test sites \
+ were mostly at risk of local exposure to nuclear radiation, but radiation containment failures \
+ and fear of global radiation exposure kept nuclear testing in the public eye.\
+ Subsequently the Comprehensive Test Ban Treaty (CTBT) aims to stop all \
  nuclear tests; even those under ground.';
   text(s, xd, yb + ypadding1 * 4, xe - xd, yc - yb); // Text wraps within text box
 
@@ -936,6 +950,8 @@ legendnew(xe,ye)
 
 annotations();
 
+  save('mysketch.svg')
+
 }
 
 
@@ -983,7 +999,7 @@ function legendnew(legx, legy, barwidth) {
 function annotations(){
   textAlign(LEFT);
   textSize(ssszzz);
-  text("←Argus III Outer\n\tatmospheric test", 150, 82);
+  text("←Argus III Outer\n\tatmospheric test", 130, 82);
   
   fill("#FEFCF544")
   // line(xe,yd,xf,yd)

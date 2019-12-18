@@ -1,4 +1,5 @@
-## Process
+## Process Documentation
+----------------------
 
 Description of the contents of this folder, a prose description of your ideas for how to represent
 the nuclear testing time series, and links to external data sources you'll be incorporating into
@@ -164,7 +165,7 @@ from the year 2000 into a visualization that plotted mulitple line charts and sm
 
 The 2nd coded example imported the [UNSCEAR data](https://www.unscear.org/unscear/en/publications.html)
 from the year 2000 into a visualization that plotted mulitple bar charts and small multiples.
-![Tests by country](codedconcept_2)
+![Tests by country](codedconcept_2.PNG)
 
 
 #### Coded sketch concept 3:
@@ -183,8 +184,23 @@ These functions would be subsequently used as building blocks for the final visu
 
 The final visualization combines the 
 [Johnsons Archive](http://www.johnstonsarchive.net/nuclear/tests/index.html)
-dataset as well as the UN
+dataset for all nuclear tests, as well as the UN
 [UNSCEAR radiation data](https://www.unscear.org/unscear/en/publications.html)
 in a visual that combines line charts, bar charts, small multiples and bubbles.
+
+More specifically, the Johnston's archive data Height of Burst (HOB), Explosion
+Yield and data are used to plot two bubble charts. The main chart shows the 
+HOB in kilometers vs. the year for all nuclear tests to illustrate the above-ground
+and underground tests over time. This graphic also serves to illustrate the temporary
+moratorium around 1958 and the resultant resurging testing peak shortly after.
+The left graphic illustrates the extent of high altitude and high yield testing
+during the peak years. Since these tests differ greatly in test altitude (>500km)
+and Yield (50MTon), it was deemed appropriate to plot these on a separate chart.
+
+The other main graphic uses the UNSCEAR report from the year 2000 to summarize
+Human radiation exposure to all isotopes arising from Nuclear testing.
+This dataset was parsed from the [UNSCEAR 2000 REPORT Vol. I
+SOURCES AND EFFECTS OF IONIZING RADIATION ANNEX C](https://www.unscear.org/unscear/en/publications/2000_1.html)
+and converted to CSV files.
 
 ![Tests by country](final_viz.png)
