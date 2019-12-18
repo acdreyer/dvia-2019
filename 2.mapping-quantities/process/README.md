@@ -184,7 +184,7 @@ These functions would be subsequently used as building blocks for the final visu
 
 The final visualization combines the 
 [Johnsons Archive](http://www.johnstonsarchive.net/nuclear/tests/index.html)
-dataset for all nuclear tests, as well as the UN
+dataset for all nuclear tests, as well as the
 [UNSCEAR radiation data](https://www.unscear.org/unscear/en/publications.html)
 in a visual that combines line charts, bar charts, small multiples and bubbles.
 
