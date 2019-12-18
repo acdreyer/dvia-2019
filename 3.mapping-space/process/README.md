@@ -98,6 +98,7 @@ A future improvement could be to also bind the slider position to a clicked
 marker.
 
 ![Final](finalMainview3.PNG)
+![Final](finalMainview3b.PNG)
 
 
 Additional information is also made available to the user through a popup menu on each
@@ -110,7 +111,9 @@ rather than adding new ones and removing them is deemed more efficient, even tho
 an even better approach might be to use other Javascript methods to communicate inbetween
 leaflet and P5.
 
+
 ![Final](markers_popup.PNG)
+
 
 Seismic events with magnitude greater than 4.5 and only for the past week are loaded
 from the USGS site by constructing a filename string using different parameters
