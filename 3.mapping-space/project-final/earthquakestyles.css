@@ -7,7 +7,7 @@
     #quake-map{
       width: 740px;
       height: 600px;
-      transform: translateY(75px);
+      /*transform: translateY(75px);*/
       /*position: fixed;*/
     }
     /*#sketch-holder{*/
@@ -53,10 +53,25 @@
 
 header {
   /*font-size: 0.5em;*/
-  vertical-align: center;
+  color: white;
+  padding-top: 10px;
+  /*vertical-align: center;*/
   height:75px;
   display: block;
   width: 1280;
   text-align: center;
   background-color: steelblue;
+}
+
+.bodytext p {
+  /*background-color: grey;*/
+  font-size: 14px;
+  padding-top: 10px;
+  width: 1280;
+  text-align: center;
+  padding-left: 10px;
+  padding-right: 10px;
+  height: 89px;
+  display: block;
+  /*border: 1px;*/
 }
