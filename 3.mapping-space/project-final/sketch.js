@@ -8,8 +8,8 @@ var table;
 // var foldername = "../data/";
 // var foldername = "../data/2017/";
 // var foldername = "../data/2018/";
-var foldername = "../data/2019/";
-// var foldername = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/";
+// var foldername = "../data/2019/";
+var foldername = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/";
 // var filebegin = "all_";
 // var filebegin = "significant_";
 var filebegin = "4.5_";
@@ -303,7 +303,7 @@ function draw() {
   //        (tabinput, colName, x, y, plotwidth, plotheight, barfrac, offset, fillclr) 
   sliderSelectBar = val;
   // barplotColumn(table, "mag", xx, yy, ww, hh - 20, bb, 0.5, '#ddd', sliderSelectBar, keepmarker)
-  barplotFaults(table, "mag", xx, yy, ww, hh - 20, bb, 0, '#eee', sliderSelectBar, keepline, windowcorners)
+  barplotFaults(table, "mag", xx, yy, ww, hh - 20, bb, 0.5, '#eee', sliderSelectBar, keepline, windowcorners)
   yaxislabel("Plate boundary distance (km)", xx / 2, yy + hh - 20, ww, hh, 12)
 
 
@@ -326,8 +326,10 @@ function setupMap() {
     maxBounds: [
       //south west
       [-89.9, -220],
+      // [-500, -220],
       //north east
       [89.9, 220]
+      // [500, 220]
     ],
   }).setView([25, 0], 1.49);
 
@@ -725,7 +727,7 @@ function barplotColumn(tabinput, colName, x, y, plotwidth, plotheight, barfrac, 
       fill(0);
       textSize(10)
       strokeWeight(0.3)
-      textAlign(RIGHT)
+      textAlign(CENTER)
       text(value + "km", x + offset * barwidth, y - 10);
 
       // Change colors for the highlighted bar
@@ -865,8 +867,8 @@ function barplotFaults(tabinput, colName, x, y, plotwidth, plotheight, barfrac, 
       fill(0);
       textSize(10)
       strokeWeight(0.3)
-      textAlign(RIGHT)
-      text(round(value * 10) / 10 + "km", x + offset * barwidth, y + 10 + plotheight );
+      textAlign(CENTER)
+      text(round(value * 10) / 10 + "km", x + offset * barwidth, y + 16 + plotheight );
 
       // Change colors for the highlighted bar
       fill('red');
