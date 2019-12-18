@@ -51,6 +51,10 @@ The final implementation default view is shown below. The main map is shown on
 the left-hand side and implemented with Leaflet.js. The area on the right is
 a P5.js canvas that plots two bar charts; firstly for the earthquake depth and
 secondly for the earhquake distance toward the closest tectonic plate boundary.
+Tectonic plate boundary lines were imported from [here](https://github.com/fraxen/tectonicplates)
+in GeoJSON format and added to the map as a separate map layer. Distances from
+seismic events to these boundaries were calculated using code from provided 
+course material examples.
 
 
 ![Final](finalMainview.PNG)
