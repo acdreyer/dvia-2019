@@ -420,7 +420,7 @@ function bubblePlot(tabinput, varName1, varName2, varName3, varName4, x, y, plot
 
 
   // if (zeroratio){
-  let yzero = y - map(0, miny1, maxy1, 0, plotheight-ypadding1*2)
+  let yzero = y - map(0, miny1, maxy1, 0, plotheight-ypadding1*1)
   // }
   // else { 
   //   let yzero = y- ypadding1;
@@ -719,8 +719,12 @@ function setup() {
 
   // print(pallet)
   //    (tabinput,             colName,               x,  y, wdth, hgt, zerorat   scal    scal,  offset,strkWght, strkClr, palette)
+    stroke(0);
+  fill(0);
   bubblePlot(below3000m, "YEAR", "HOB", "YIELD", "MON_NUM", xx, yy, ww, hh, 1, yscale, szescale, 0, 0.2, '#000', palette)
-  yaxistics(below3000m, "YEAR", "HOB", xx, yy, ww, hh, 1000,360/2,0.001,0.2 ,"#000",8)
+    strokeWeight(1);
+  stroke(0);
+  yaxistics(below3000m, "YEAR", "HOB", xx, yy, ww, hh, 1000,360/2,0.001,0.4 ,"#000",8)
 
 
 
@@ -752,7 +756,7 @@ function setup() {
   // linegraph(table,"NH_Inhalation",xx,yy,ww,hh,bb,0,1,'#ggg')
   linegraph(table, "WorldTotal", xx, yy, ww, hh, bb, 0, 1, '#000')
     //                                                 scale  stroke strkclr
-  yaxistics(table, "Year", "WorldTotal", xx, yy, ww, hh, 20, 0,0.001,0.5 ,"#000",8)
+  yaxistics(table, "Year", "WorldTotal", xx, yy, ww, hh, 20, 0,0.001,0.4 ,"#000",8)
   //"Year", "NH_External", "NH_Ingestional", "NH_Inhalation", "NH_Total", 
   // "SH_External", "SH_Ingestional", "SH_Inhalation", "SH_Total", 
   //"WorldExternal", "WorldIngestiona", "WorldInhalation", "WorldTotal"
@@ -787,7 +791,7 @@ function setup() {
   textSize(16);
   stroke(0);
   fill(0);
-  text('Peak Test Years, \nAltitudes and Yields', (xb + ww / 2 + xb/4), yy - hh -16 - ypadding1);
+  text('Peak Test Years:\n High Altitudes and Yields', (xb + ww / 2 + xb/4), yy - hh -16 - ypadding1);
   xaxislabel(highyears, "YEAR", xx, yy + ypadding1*2, ww, hh, 12, 0, 1, '#e00', majorint);
   yaxislabel('Height of Burst (km)', xx-25, yy, ww, hh, 12);
   //         data   value            x  y  w  h  scl       or  strW  str   fill   palette        
@@ -796,9 +800,12 @@ function setup() {
   bubblePlot(gapHighyears, "YEAR", "HOB", "YIELD", "MON_NUM", xx, yy, ww, hh, 0, yscale, szescale, 0, 0.2, '#000', palette)
 
   // bubblePlot(below3000m, "YEAR","HOB","YIELD","MON_NUM", xx, yy, ww, hh, 1    , yscale ,szescale, 0,    0.2,      '#000',   palette)
-  yaxistics(gapHighyears, "YEAR", "HOB", xx, yy, ww, hh, 100000, 1375/2,0.001,0.5 ,"#000",8)
+  yaxistics(gapHighyears, "YEAR", "HOB", xx, yy, ww, hh, 100000, 1375/2,0.001,0.4 ,"#000",8)
+  stroke('#999');
+  // var thislimit = 50;
+  // line(xx,yy-thislimit,xx+ww,yy-thislimit)
 
-
+  // stroke(0);
 
 
 
@@ -834,13 +841,15 @@ function setup() {
   textAlign(RIGHT);
   // xaxislabel(otherExposures, "Years", xx, yy+ypadding1, ww, hh, 12, 0, 1, '#e00',5)
   yaxislabel('Radiation (mSv)', xx-25, yy, ww, hh, 12)
-  yaxistics(otherExposures, "Place", "mSv", xx, yy, ww, hh -ypadding2, 20, 0,1,0.5 ,"#000",8)
+  yaxistics(otherExposures, "Place", "mSv", xx, yy, ww, hh -ypadding2, 20, 0,1,0.4 ,"#000",8)
   
   
   print("Otherexposures " + otherExposures)
   barplotColumn(otherExposures, "mSv", xf, yd, ww, hh -ypadding2, bb, 0.5, '#e00')
   // barplotColumn(table,"WorldIngestiona",xx,yy,ww,hh,bb,1,'#0e0')
   // barplotColumn(table,"WorldInhalation",xx,yy,ww,hh,bb,2,'#00e')
+  var thislimit = 133;
+  line(xx,yy-thislimit,xx+ww,yy-thislimit)
 
 
 
@@ -950,7 +959,7 @@ legendnew(xe,ye)
 
 annotations();
 
-  save('mysketch.svg')
+  // save('mysketch.svg')
 
 }
 
