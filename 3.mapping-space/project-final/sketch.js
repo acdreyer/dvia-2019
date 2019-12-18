@@ -1,3 +1,10 @@
+
+
+// This script creates an interactive Leaflet map that plots earthquake geo locations
+// as well as a P5.js graph that shows earthquake depth.
+
+
+
 // the data loaded from a USGS-provided CSV file
 var table;
 
@@ -7,8 +14,8 @@ var pi = 3.14;
 var track;
 // var foldername = "../data/";
 // var foldername = "../data/2017/";
-var foldername = "../data/2018/";
-// var foldername = "../data/2019/";
+// var foldername = "../data/2018/";
+var foldername = "../data/2019/";
 // var foldername = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/";
 // var filebegin = "all_";
 // var filebegin = "significant_";
@@ -21,7 +28,9 @@ var fileend = "week.csv";
 // var fileend = "hour.csv";
 var filename = foldername + filebegin + fileend;
 
-
+var xorigin = 0;
+var yorigin = 150;
+var faultlinedata=[];
 
 // controls
 var mapViewCoords = {
@@ -34,6 +43,7 @@ var mapViewCoords = {
 let slider;
 var slidermax = 1000;
 var keepmarker;
+var keepline;
 var faultlineStyle = {
   "color": "#444",
   "weight": 1.2
@@ -65,22 +75,31 @@ function setup() {
 
 
   // sort the rows of the table from largest to smallest magnitude
-  table = sortTable(table, 'depth')
+  table = sortTable(table, 'depth') 
+  
+  
   // first, call our map initialization function (look in the html's style tag to set its dimensions)
   setupMap()
   print("tectonicplates " + geojsonFeature)
   // print("faultlines " + geojsonFeature)
 
 
+
   // generate a p5 diagram that complements the map, communicating the earthquake data non-spatially
   let mycanvas = createCanvas(canvaswidth, 600)
-  mycanvas.position(740, 0)
+  // mycanvas.parent('sketch-holder');
+  // console.log(mycanvas.position())
+  // xpos = mycanvas.position().x;
+  // ypos = mycanvas.position().y;
+  mycanvas.position(xorigin+740, yorigin+0)
+  // mycanvas.position(0, 0)
   frameRate(10);
 
 
   // create a slider to select an earthquake
   slider = createSlider(0, slidermax, slidermax * 0.5);
-  slider.position(790, 125);
+  // slider.position(xpos + 780, ypos + 175);
+  slider.position( xorigin+780, yorigin+ 125);
   slider.style('width', graphwidth + 'px');
 
 
@@ -100,8 +119,11 @@ function setup() {
     zIndexOffset: -1000
   })
 
+
   //marker latlng
+  // use a random value here. It will be updated instantly once the draw loop starts
   var ll = L.latLng(40.795, -73.953)
+
 
   // create marker
   var marker = L.marker(ll, {
@@ -123,6 +145,32 @@ function setup() {
   });
   // _northEast: j {lat: 26.902479278214706, lng: 154.79296982288363}
   // _southWest: j {lat: -24.046461550232213, lng: 89.75390732288362}
+  
+  
+  // before querying the Tectonic plate/fault data, you need to let it know which map you're using
+    Tectonic.useMap(mymap)
+  
+  
+  // get the distances to the closest fault lines for plotting
+      for (var r=0; r<table.rows.length; r++){
+        var row = table.getRow(r)
+        var lat = row.getNum('latitude')
+        var lng = row.getNum('longitude')
+
+        // find the intersection point with the nearest fault
+        faultlinedata[r] = Tectonic.findFault(lat, lng)
+    }
+        // print(faultlinedata);
+  
+  
+        // draw a line connecting two random points
+        // this line will be updated instantaneously once the draw loop starts
+        var linetokeep = L.polyline([[40.795, -73.953], [40.798, -73.958]], {
+            color:'red',
+            weight:1
+        }).bindTooltip("Highlighted").addTo(mymap);
+        // }).bindTooltip(`${closest.distance.toFixed(1)} km from ${closest.name} fault`).addTo(globe)
+        keepline = linetokeep;
 
 }
 // ---------------------------------------------------------
@@ -154,19 +202,64 @@ function draw() {
 
 
 
+
+
+
+  // Draw the barchart showing depth values:
   //------------Plot  #right
   var barfrac = 1;
   var pi = 3.14;
   xx = 50
   yy = 175;
   ww = graphwidth;
-  hh = 400;
+  hh = 200;
   majorint = 2;
   bb = barfrac * 0.5;
   szescale = 0.075;
   yscale = 1;
 
 
+
+  // ----------------------------------------------------------------------
+  // Draw the bar chart for depth
+  // ----------------------------------------------------------------------
+  //   drawgrid(table, xf, yd, ww, hh-ypadding2, otherExposures.getRowCount(), majorint);
+  textStyle(NORMAL);
+  textAlign(CENTER);
+  textSize(16);
+  stroke(0);
+  fill(0);
+  text('Earthquake depth (km)', canvaswidth / 2, 20)
+  textStyle(NORMAL);
+  textAlign(RIGHT);
+  // xaxislabel(table, "column", xx, yy, ww, hh    , 12, 0, 1, '#e00',5)
+  // yaxislabel('Depth', xx - 25, yy, ww, hh, 12)
+  // (tabinput, varName1, x, y, plotwidth, plotheight, ticsize, yoffset,unitscale, strkWght, strkClr, txtsze)
+  yaxistics(table, "depth", xx, yy, ww, hh - 20, 20, 0, 1, 0.5, "#000", 8)
+
+  // print("Data: " + table)
+  //        (tabinput, colName, x, y, plotwidth, plotheight, barfrac, offset, fillclr) 
+  sliderSelectBar = val;
+  barplotColumn(table, "depth", xx, yy, ww, hh - 20, bb, 0.5, '#ddd', sliderSelectBar, keepmarker)
+  yaxislabel("Depth (km)", xx / 2, yy + hh, ww, hh, 12)
+  
+  
+  
+  
+  
+  // ----------------------------------------------------------------------
+  // Draw another barchart showing fault line distance values:
+  // ----------------------------------------------------------------------
+  var barfrac = 1;
+  var pi = 3.14;
+  xx = 50
+  yy = 375;
+  ww = graphwidth;
+  hh = 200;
+  majorint = 2;
+  bb = barfrac * 0.5;
+  szescale = 0.075;
+  yscale = 1;
 
 
   //   drawgrid(table, xf, yd, ww, hh-ypadding2, otherExposures.getRowCount(), majorint);
@@ -179,17 +272,21 @@ function draw() {
   textStyle(NORMAL);
   textAlign(RIGHT);
   // xaxislabel(table, "column", xx, yy, ww, hh    , 12, 0, 1, '#e00',5)
-  yaxislabel('Depth', xx - 25, yy, ww, hh, 12)
+  // yaxislabel('Depth', xx - 25, yy, ww, hh, 12)
   // (tabinput, varName1, x, y, plotwidth, plotheight, ticsize, yoffset,unitscale, strkWght, strkClr, txtsze)
-  yaxistics(table, "depth", xx, yy, ww, hh - 20, 20, 0, 1, 0.5, "#000", 8)
+  yaxistics(table, "mag", xx, yy, ww, hh - 20, 20, 0, 1, 0.5, "#000", 8)
 
   // print("Data: " + table)
   //        (tabinput, colName, x, y, plotwidth, plotheight, barfrac, offset, fillclr) 
   sliderSelectBar = val;
-  barplotColumn(table, "depth", xx, yy, ww, hh - 20, bb, 0.5, '#ddd', sliderSelectBar, keepmarker)
-  yaxislabel("Depth (km)", xx / 2, yy + hh, ww, hh, 12)
+  // barplotColumn(table, "mag", xx, yy, ww, hh - 20, bb, 0.5, '#ddd', sliderSelectBar, keepmarker)
+  barplotFaults(table, "mag", xx, yy, ww, hh - 20, bb, 0.5, '#ddd', sliderSelectBar, keepline)
+  yaxislabel("Magnitude (km)", xx / 2, yy + hh, ww, hh, 12)
+  
 
 }
+  // ----------------------------------------------------------------------
+  // ----------------------------------------------------------------------
 
 
 
@@ -219,8 +316,6 @@ function setupMap() {
   }).addTo(mymap);
 
 }
-
-
 
 
 // ---------------------------------------------------------
@@ -258,6 +353,8 @@ function addFaultlines() {
 // ---------------------------------------------------------
 
 function addCircles() {
+  
+  
   // calculate minimum and maximum values for magnitude and depth
   var magnitudeMin = 0.0;
   var magnitudeMax = columnMax(table, "mag");
@@ -267,14 +364,20 @@ function addCircles() {
   var depthMax = columnMax(table, "depth");
   console.log('depth range:', [depthMin, depthMax])
 
+
+
   // step through the rows of the table and add a dot for each event
   for (var i = 0; i < table.getRowCount(); i++) {
     var row = table.getRow(i)
+
+
 
     // skip over any rows where the magnitude data is missing
     if (row.get('mag') == '') {
       continue
     }
+
+
 
     // create a new dot
     var magnitude = row.getNum('mag');
@@ -384,6 +487,7 @@ function removeAllCircles() {
 // ---------------------------------------------------------
 // get the maximum value within a column
 function columnMax(tableObject, columnName) {
+
   // get the array of strings in the specified column
   var colStrings = tableObject.getColumn(columnName);
 
@@ -403,6 +507,7 @@ function columnMax(tableObject, columnName) {
 // ---------------------------------------------------------
 // get the minimum value within a column
 function columnMin(tableObject, columnName) {
+
   // get the array of strings in the specified column
   var colStrings = tableObject.getColumn(columnName);
 
@@ -424,8 +529,8 @@ function columnMin(tableObject, columnName) {
 // ---------------------------------------------------------
 // This function was supplied by Prof. Swineheart
 function sortTable(origTable, columnName) {
+
   // Returns a copy of a Table object whose rows are ordered according to values in the specified column
-  // 
   // By default the rows in the table will be sorted in ascending order. If you pass a 
   // column name with a '-' at the start of it, the rows will be sorted in descending order.
   // 
@@ -457,10 +562,6 @@ function addCircleHighlight(circLat, circLong, magnitude) {
     radius: magnitude * 40000,
     weight: 0.4
   });
-  // var myLayer = L.geoJSON().addTo(mymap);
-  // myLayer.addData(geojsonFeature,{
-  //     style: faultlineStyle
-  //   });
 
   var highlightlayer = L.layerGroup([circleHighlight]);
   highlightlayer.addTo(mymap);
@@ -504,22 +605,20 @@ function barplotColumn(tabinput, colName, x, y, plotwidth, plotheight, barfrac, 
   var colwidth = plotwidth / tabinput.getRowCount();
   var barwidth = colwidth * barfrac;
   var totalN = tabinput.getRowCount();
-  // tabinput.columns
 
 
 
-  // draw the zero axis labels on the base---------------------------
+  // draw the zero axis labels on the base-----------------------------------
   stroke(150);
   strokeWeight(0.5);
   line(x, yzero, x + plotwidth, yzero)
 
 
-  // get min and max
+
+  // get the minimum and maximum values for scales --------------------------
   let miny1 = 3000000;
   let maxy1 = -300000;
 
-
-  // get the minimum and maximum values for scales --------------------
   for (var i = 0; i < (totalN); i++) {
     if (tabinput.getNum(i, col) <= miny1) {
       miny1 = tabinput.getNum(i, col);
@@ -530,9 +629,10 @@ function barplotColumn(tabinput, colName, x, y, plotwidth, plotheight, barfrac, 
   }
 
 
+
   // loop through all the data points----------------------------------------
   for (let i = 0; i < totalN; i++) {
-    
+
     var place = tabinput.getString(i, 0) // grab the data
     var value = tabinput.getNum(i, col)
     var lgndval = tabinput.getString(i, 2)
@@ -547,9 +647,7 @@ function barplotColumn(tabinput, colName, x, y, plotwidth, plotheight, barfrac, 
       6: ["#810f7c", "#810f7c", "#810f7c", "#e7298a", "#66a61e", "#e6ab02"],
       7: ["#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02", "#a6761d"],
       8: ["#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02", "#a6761d", "#666666"]
-
     };
-
 
 
     // get the lat and long from the table
@@ -561,7 +659,7 @@ function barplotColumn(tabinput, colName, x, y, plotwidth, plotheight, barfrac, 
     // determine if selection is highlighted then change bar color
     if (mapLatSW <= latval && mapLongSW <= longval && mapLatNE >= latval && mapLongNE >= longval) {
       fillclr = 130;
-    // fill(Dark2[6][i]);
+      // fill(Dark2[6][i]);
       console.log("Highlighted selection")
     }
     else {
@@ -569,28 +667,28 @@ function barplotColumn(tabinput, colName, x, y, plotwidth, plotheight, barfrac, 
     }
 
 
-    
+
     // Create color for selected bar using slider value-----------------------
-    if (thisBari == i) {
-      
+    if ((thisBari ) == i) {
+
       // get the rest of the values from the table
       var magval = tabinput.getNum(i, col4)
       var popupdepthError = tabinput.getNum(i, col5)
       var latlng = L.latLng(latval, longval);
-      
+
       // change map icon marker position and content
       marker.setLatLng(latlng);
       // marker.bindPopup("Magnitude: " + magval + "<br>Depth: " + value + " km<br>Depth Error: " + popupdepthError + " km").openPopup();
-      marker.setPopupContent("Magnitude: " + magval + "<br>Depth: " + value + " km<br>Depth Error: " + popupdepthError + " km");
-      
+      marker.setPopupContent("Magnitude: " + magval + "<br>Depth: " + value + " km<br>Depth Error: " + popupdepthError + " km<br><br>Tectonic plate line:<br> "+faultlinedata[i].name);
+
       // add text legend to the graph
       stroke(0);
       fill(0);
       textSize(10)
       strokeWeight(0.3)
       textAlign(RIGHT)
-      text(value + "km", x + offset * barwidth, 160);
-      
+      text(value + "km", x + offset * barwidth, y -10);
+
       // Change colors for the highlighted bar
       fill('red');
       stroke('red');
@@ -611,6 +709,152 @@ function barplotColumn(tabinput, colName, x, y, plotwidth, plotheight, barfrac, 
 }
 // ---------------------------------------------------------
 // ---------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+// ------------------------------------------------
+// Barplot      Barplot     Barplot    #barplot
+// ------------------------------------------------
+// this function is very similar to the preceding barplot function, however it
+// uses a global variable of faultline distance to plot the chart instead of
+// loading data from a CSV file.
+
+function barplotFaults(tabinput, colName, x, y, plotwidth, plotheight, barfrac, offset, fillclr, sliderSelectBar, linetokeep) {
+
+
+  // Table column data matching
+  col = tabinput.columns.indexOf(colName);
+  col2 = tabinput.columns.indexOf("latitude");
+  col3 = tabinput.columns.indexOf("longitude");
+  col4 = tabinput.columns.indexOf("mag");
+  col5 = tabinput.columns.indexOf("depthError");
+
+
+  // Map zoom parameters for graph filetering
+  // console.log(mapViewCoords)
+  var mapLatSW = mapViewCoords._southWest.lat;
+  var mapLongSW = mapViewCoords._southWest.lng;
+  var mapLatNE = mapViewCoords._northEast.lat;
+  var mapLongNE = mapViewCoords._northEast.lng;
+
+
+  // Other initializiations
+  var yzero = y;
+  var colwidth = plotwidth / faultlinedata.length;
+  var barwidth = colwidth * barfrac;
+  // var totalN = tabinput.getRowCount();
+  var totalN = faultlinedata.length;
+
+
+
+  // draw the zero axis labels on the base-----------------------------------
+  stroke(150);
+  strokeWeight(0.5);
+  line(x, yzero, x + plotwidth, yzero)
+
+
+
+  // get the minimum and maximum values for scales --------------------------
+  let miny1 = 3000000;
+  let maxy1 = -300000;
+
+  for (var i = 0; i < (totalN); i++) {
+    if (faultlinedata[i].distance <= miny1) {
+      miny1 = faultlinedata[i].distance;
+    }
+    if (faultlinedata[i].distance >= maxy1) {
+      maxy1 = faultlinedata[i].distance;
+    }
+  }
+
+
+
+  // loop through all the data points----------------------------------------
+  for (let i = 0; i < totalN; i++) {
+
+    // var place = tabinput.getString(i, 0) // grab the data
+    var value = faultlinedata[i].distance;
+    // var lgndval = tabinput.getString(i, 2)
+    var thisBari = round(map(sliderSelectBar, 0, slidermax, 0, totalN - 1));
+
+
+
+    // get the lat and long from the table
+    var latval = tabinput.getNum(i, col2)
+    var longval = tabinput.getNum(i, col3)
+    var latval2 = faultlinedata[i].latitude;
+    var longval2 = faultlinedata[i].longitude;
+
+
+
+    // determine if selection is highlighted then change bar color
+    if (mapLatSW <= latval && mapLongSW <= longval && mapLatNE >= latval && mapLongNE >= longval) {
+      fillclr = 130;
+      console.log("Highlighted selection")
+    }
+    else {
+      fillclr = 200;
+    }
+
+
+
+    // Create color for selected bar using slider value-----------------------
+    if ((thisBari ) == i) {
+
+      // get the rest of the values from the table
+
+      // change map icon line position and content
+      linetokeep.setLatLngs([{lat:latval,lng:longval},{lat:latval2,lng:longval2}]);
+
+      // add text legend to the graph
+      stroke(0);
+      fill(0);
+      textSize(10)
+      strokeWeight(0.3)
+      textAlign(RIGHT)
+      text(value + "km", x + offset * barwidth, y -10);
+
+      // Change colors for the highlighted bar
+      fill('red');
+      stroke('red');
+
+    }
+
+    // draw the bar on the barchart--------------------------------------------------
+    rect(x + offset * barwidth, yzero, barwidth, (map(value, 0, maxy1, 0, plotheight)));
+
+    // reset the colors for the rest of the bars
+    fill(fillclr);
+    stroke(fillclr);
+
+
+    x += colwidth // shift rightward to next col
+  }
+
+}
+// ---------------------------------------------------------
+// ---------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
