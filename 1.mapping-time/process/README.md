@@ -80,7 +80,7 @@ This is the final implementation:
 
 ### Date Concept 1: Gear and slider (Rack and Pinion)
 
-[The rack and pinion](Antonie_DatesConcept_1.png) idea is to represent the day of the the week and month
+[The rack and pinion](Antonie_DatesConcept_1.pdf) idea is to represent the day of the the week and month
 by **rotation** and **translation**. The idea is to have a fixed ratio defining the passing
 of weeks and months, which might have some indicator on the gear and horizontal slider.
 
@@ -112,7 +112,7 @@ of the month. Days of the week would be represented by the amount of sides on th
 shape (a polygon). Stars could also possibly be used, in which case the number
 of vertex points would correspond to the day of the week.
 
-![Polygon Sides and Size](Antonie_DatesConcept_2.pdf)
+![Polygon Sides and Size](Antonie_DatesConcept_2.png)
 
 The question of a 1-sided and 2-sided shape would be solved by using a point and 
 a line, before adding sides to become a triangle, square...etc.
